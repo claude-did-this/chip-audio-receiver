@@ -1,0 +1,27 @@
+# Node modules
+node_modules/
+
+# Audio output files
+*.mp3
+*.wav
+*.raw
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
