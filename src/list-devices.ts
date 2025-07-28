@@ -3,7 +3,7 @@
 import { AudioDeviceManager } from './audio-devices';
 import { logInfo, logSection, logError } from './logger';
 
-async function listAudioDevices() {
+async function listAudioDevices(): Promise<void> {
   try {
     logSection('Available Audio Devices');
     

@@ -38,7 +38,7 @@ export const logger = isPretty ?
   });
 
 // Add custom logging methods for styled output
-export const logBanner = (title: string) => {
+export const logBanner = (title: string): void => {
   if (isPretty) {
     console.log('\n┌─────────────────────────────────────────────────┐');
     console.log(`│${title.padStart(33).padEnd(49)}│`);
@@ -48,7 +48,7 @@ export const logBanner = (title: string) => {
   }
 };
 
-export const logSection = (message: string) => {
+export const logSection = (message: string): void => {
   if (isPretty) {
     console.log(`\n▶ ${message}\n`);
   } else {
@@ -56,7 +56,7 @@ export const logSection = (message: string) => {
   }
 };
 
-export const logSuccess = (message: string, details?: Record<string, unknown>) => {
+export const logSuccess = (message: string, details?: Record<string, unknown>): void => {
   if (isPretty) {
     console.log(`✓ ${message}`);
     if (details) {
@@ -69,7 +69,7 @@ export const logSuccess = (message: string, details?: Record<string, unknown>) =
   }
 };
 
-export const logError = (message: string, error?: Error | unknown) => {
+export const logError = (message: string, error?: Error | unknown): void => {
   if (isPretty) {
     console.log(`✗ ${message}`);
     if (error) {
@@ -80,7 +80,7 @@ export const logError = (message: string, error?: Error | unknown) => {
   }
 };
 
-export const logInfo = (icon: string, message: string, details?: Record<string, unknown>) => {
+export const logInfo = (icon: string, message: string, details?: Record<string, unknown>): void => {
   if (isPretty) {
     console.log(`${icon} ${message}`);
     if (details) {

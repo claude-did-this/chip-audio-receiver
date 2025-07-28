@@ -13,7 +13,8 @@ import {
   StatusValue,
   AudioOutputMessage,
   StatusMessage,
-  ErrorMessage
+  ErrorMessage,
+  AudioStream
 } from './types';
 import { setupMetrics } from './metrics';
 import { AudioProcessor } from './audio-processor';
@@ -26,7 +27,7 @@ class AudioReceiver {
   private app: express.Application;
   private isShuttingDown = false;
   private startTime = Date.now();
-  private activeStreams = new Map<string, any>();
+  private activeStreams = new Map<string, AudioStream>();
 
   constructor() {
     this.audioProcessor = new AudioProcessor(config.audio);
@@ -150,7 +151,7 @@ class AudioReceiver {
           this.handleError(response as ErrorMessage);
           break;
         default:
-          logger.warn('Unknown message type', { type: (response as any).type });
+          logger.warn('Unknown message type', { type: (response as VoiceResponseMessage).type });
       }
     } catch (error) {
       logger.error('Failed to parse voice response', { error, message });
@@ -195,7 +196,7 @@ class AudioReceiver {
         logSuccess('Stream completed', { 
           id,
           sessionId,
-          duration: `${(Date.now() - this.activeStreams.get(sessionId)?.startTime || 0) / 1000}s`
+          duration: `${(Date.now() - (this.activeStreams.get(sessionId)?.startTime || Date.now())) / 1000}s`
         });
         await this.audioProcessor.finalizeStream(sessionId);
         this.activeStreams.delete(sessionId);
@@ -293,7 +294,7 @@ class AudioReceiver {
   }
 
   private setupGracefulShutdown(): void {
-    const shutdown = async (signal: string) => {
+    const shutdown = async (signal: string): Promise<void> => {
       logSection('Shutdown');
       logInfo('[SIGNAL]', `Received ${signal}, shutting down gracefully...`);
       this.isShuttingDown = true;

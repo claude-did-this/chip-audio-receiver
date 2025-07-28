@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { logger } from './logger';
+import { WindowsAudioDevice, WindowsWMIDevice, MacAudioData, MacAudioDevice, MacAudioItem } from './types';
 
 const execAsync = promisify(exec);
 
@@ -36,8 +37,8 @@ export class AudioDeviceManager {
       const command = 'powershell -Command "Get-AudioDevice -List | Select-Object -Property Name, ID, Type | ConvertTo-Json"';
       const { stdout } = await execAsync(command);
       
-      const devices = JSON.parse(stdout);
-      return devices.map((device: any) => ({
+      const devices = JSON.parse(stdout) as WindowsAudioDevice[];
+      return devices.map((device: WindowsAudioDevice) => ({
         id: device.ID,
         name: device.Name,
         type: device.Type.toLowerCase() as 'input' | 'output'
@@ -47,8 +48,8 @@ export class AudioDeviceManager {
       const command = 'powershell -Command "Get-WmiObject Win32_SoundDevice | Select-Object Name, DeviceID | ConvertTo-Json"';
       const { stdout } = await execAsync(command);
       
-      const devices = JSON.parse(stdout);
-      return devices.map((device: any) => ({
+      const devices = JSON.parse(stdout) as WindowsWMIDevice[];
+      return devices.map((device: WindowsWMIDevice) => ({
         id: device.DeviceID,
         name: device.Name,
         type: 'output' // WMI doesn't distinguish input/output
@@ -60,13 +61,13 @@ export class AudioDeviceManager {
     const command = 'system_profiler SPAudioDataType -json';
     const { stdout } = await execAsync(command);
     
-    const data = JSON.parse(stdout);
+    const data = JSON.parse(stdout) as MacAudioData;
     const devices: AudioDevice[] = [];
     
     if (data.SPAudioDataType) {
-      data.SPAudioDataType.forEach((item: any) => {
+      data.SPAudioDataType.forEach((item: MacAudioItem) => {
         if (item._items) {
-          item._items.forEach((device: any) => {
+          item._items.forEach((device: MacAudioDevice) => {
             devices.push({
               id: device._name,
               name: device._name,

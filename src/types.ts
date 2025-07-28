@@ -145,3 +145,40 @@ export interface SpeakerConfig {
   signed?: boolean;
   device?: string;
 }
+
+export interface WindowsAudioDevice {
+  ID: string;
+  Name: string;
+  Type: string;
+}
+
+export interface WindowsWMIDevice {
+  DeviceID: string;
+  Name: string;
+}
+
+export interface MacAudioDevice {
+  _name: string;
+  coreaudio_input_source?: boolean;
+}
+
+export interface MacAudioItem {
+  _items?: MacAudioDevice[];
+}
+
+export interface MacAudioData {
+  SPAudioDataType?: MacAudioItem[];
+}
+
+export interface ResilienceConfig {
+  reconnectMaxAttempts: number;
+  reconnectBaseDelay: number;
+  reconnectMaxDelay: number;
+  healthCheckInterval: number;
+}
+
+export interface ResilienceMetrics {
+  circuitState: string;
+  reconnectAttempts: number;
+  isReconnecting: boolean;
+}

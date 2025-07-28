@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import { ResilienceConfig, ResilienceMetrics } from './types';
 
 export enum CircuitState {
   CLOSED = 'CLOSED',
@@ -96,9 +97,9 @@ export class ResilienceManager {
   private circuitBreaker: CircuitBreaker;
   private reconnectAttempts = 0;
   private reconnectTimeout?: NodeJS.Timeout;
-  private readonly config: any;
+  private readonly config: ResilienceConfig;
 
-  constructor(config: any) {
+  constructor(config: ResilienceConfig) {
     this.config = config;
     this.circuitBreaker = new CircuitBreaker({
       failureThreshold: 5,
@@ -148,7 +149,7 @@ export class ResilienceManager {
     }, delay);
   }
 
-  handleError(error: any): void {
+  handleError(error: Error | unknown): void {
     logger.error('Resilience manager handling error', { error });
 
     // Categorize errors
@@ -159,16 +160,20 @@ export class ResilienceManager {
     }
   }
 
-  private isRetryableError(error: any): boolean {
+  private isRetryableError(error: Error | unknown): boolean {
     // Network errors
-    if (error.code === 'ECONNREFUSED' || 
-        error.code === 'ETIMEDOUT' ||
-        error.code === 'ENOTFOUND') {
-      return true;
+    if (error && typeof error === 'object' && 'code' in error) {
+      const errorCode = (error as {code?: string}).code;
+      if (errorCode === 'ECONNREFUSED' || 
+          errorCode === 'ETIMEDOUT' ||
+          errorCode === 'ENOTFOUND') {
+        return true;
+      }
     }
 
     // Redis errors
-    if (error.message?.includes('Redis') && 
+    if (error instanceof Error && 
+        error.message?.includes('Redis') && 
         error.message?.includes('connect')) {
       return true;
     }
@@ -188,7 +193,7 @@ export class ResilienceManager {
     return this.circuitBreaker.getState();
   }
 
-  getMetrics() {
+  getMetrics(): ResilienceMetrics {
     return {
       circuitState: this.getCircuitState(),
       reconnectAttempts: this.reconnectAttempts,
