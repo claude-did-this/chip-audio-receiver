@@ -15,7 +15,7 @@ export const config: Config = {
   },
   audio: {
     output: {
-      type: (process.env.AUDIO_OUTPUT_TYPE as any) || 'speaker',
+      type: (process.env.AUDIO_OUTPUT_TYPE as 'speaker' | 'ffplay' | 'vlc' | 'file') || 'speaker',
       device: process.env.AUDIO_DEVICE
     },
     bufferSize: parseInt(process.env.AUDIO_BUFFER_SIZE || '4096', 10),
@@ -33,7 +33,7 @@ export const config: Config = {
   },
   logging: {
     level: process.env.LOG_LEVEL || 'info',
-    format: (process.env.LOG_FORMAT as any) || 'json'
+    format: (process.env.LOG_FORMAT as 'json' | 'simple') || 'json'
   }
 };
 

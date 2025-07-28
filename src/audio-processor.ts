@@ -4,21 +4,13 @@ import * as fs from 'fs';
 import Speaker from 'speaker';
 import { logger } from './logger';
 import { AudioDeviceManager } from './audio-devices';
-
-interface AudioStream {
-  sessionId: string;
-  format: string;
-  sampleRate: number;
-  output: Writable | ChildProcess | null;
-  buffer: Buffer[];
-  startTime: number;
-}
+import { AudioStream, SpeakerConfig, Config } from './types';
 
 export class AudioProcessor {
   private streams = new Map<string, AudioStream>();
-  private config: any;
+  private config: Config['audio'];
 
-  constructor(config: any) {
+  constructor(config: Config['audio']) {
     this.config = config;
   }
 
@@ -66,9 +58,10 @@ export class AudioProcessor {
   }
 
   private async createSpeakerOutput(format: string, sampleRate: number): Promise<Speaker> {
-    const speakerConfig: any = {
+    const speakerConfig: SpeakerConfig = {
       channels: 1,          // Mono
-      sampleRate: sampleRate
+      sampleRate: sampleRate,
+      bitDepth: 16          // Default bitDepth
     };
 
     if (format === 'pcm') {

@@ -56,7 +56,7 @@ export const logSection = (message: string) => {
   }
 };
 
-export const logSuccess = (message: string, details?: any) => {
+export const logSuccess = (message: string, details?: Record<string, unknown>) => {
   if (isPretty) {
     console.log(`✓ ${message}`);
     if (details) {
@@ -69,18 +69,18 @@ export const logSuccess = (message: string, details?: any) => {
   }
 };
 
-export const logError = (message: string, error?: any) => {
+export const logError = (message: string, error?: Error | unknown) => {
   if (isPretty) {
     console.log(`✗ ${message}`);
     if (error) {
-      console.log(`  Error: ${error.message || error}`);
+      console.log(`  Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   } else {
     logger.error(message, error);
   }
 };
 
-export const logInfo = (icon: string, message: string, details?: any) => {
+export const logInfo = (icon: string, message: string, details?: Record<string, unknown>) => {
   if (isPretty) {
     console.log(`${icon} ${message}`);
     if (details) {

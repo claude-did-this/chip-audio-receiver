@@ -1,3 +1,6 @@
+import { Writable } from 'stream';
+import { ChildProcess } from 'child_process';
+
 export enum MessageType {
   AUDIO_OUTPUT = 'AUDIO_OUTPUT',
   STATUS = 'STATUS',
@@ -49,7 +52,7 @@ export interface StatusData {
 export interface ErrorData {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 export interface BaseMessage {
@@ -123,4 +126,22 @@ export interface Config {
     level: string;
     format: 'json' | 'simple';
   };
+}
+
+export interface AudioStream {
+  sessionId: string;
+  format: string;
+  sampleRate: number;
+  output: Writable | ChildProcess | null;
+  buffer: Buffer[];
+  startTime: number;
+}
+
+export interface SpeakerConfig {
+  channels: number;
+  sampleRate: number;
+  bitDepth: number;
+  float?: boolean;
+  signed?: boolean;
+  device?: string;
 }
