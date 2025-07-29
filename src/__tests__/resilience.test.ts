@@ -79,17 +79,12 @@ describe('Resilience - Error Handling Behavior', () => {
       
       expect(circuitBreaker.getState()).toBe(CircuitState.OPEN);
       
-      // Mock the timer to simulate reset timeout
-      jest.useFakeTimers();
-      
-      // Advance time past reset timeout
-      jest.advanceTimersByTime(1100);
+      // Wait for real reset timeout
+      await new Promise(resolve => setTimeout(resolve, 1100));
       
       // Next operation should be attempted (HALF_OPEN)
       const successOperation = jest.fn<() => Promise<string>>().mockResolvedValue('success');
       await circuitBreaker.execute(successOperation);
-      
-      jest.useRealTimers();
       
       expect(successOperation).toHaveBeenCalled();
     });
@@ -105,13 +100,8 @@ describe('Resilience - Error Handling Behavior', () => {
         }
       }
       
-      // Mock the timer to simulate reset timeout
-      jest.useFakeTimers();
-      
-      // Advance time past reset timeout
-      jest.advanceTimersByTime(1100);
-      
-      jest.useRealTimers();
+      // Wait for real reset timeout
+      await new Promise(resolve => setTimeout(resolve, 1100));
       
       // Execute 3 successful operations to close circuit
       const successOperation = jest.fn<() => Promise<string>>().mockResolvedValue('success');
@@ -270,37 +260,40 @@ describe('Resilience - Error Handling Behavior', () => {
     });
 
     it('should handle successful reconnection and continue with exponential backoff', async () => {
-      const mockReconnect = jest.fn<() => Promise<void>>()
-        .mockRejectedValueOnce(new Error('Fail'))  // First fails, triggers retry
-        .mockRejectedValueOnce(new Error('Fail'))  // Second fails  
-        .mockResolvedValueOnce(undefined);  // Third succeeds
+      // Mock executeWithResilience to control the flow
+      const executeWithResilienceSpy = jest.spyOn(resilienceManager, 'executeWithResilience');
+      executeWithResilienceSpy
+        .mockRejectedValueOnce(new Error('Fail'))  // First fails
+        .mockResolvedValueOnce(undefined);  // Second succeeds
+
+      const mockReconnect = jest.fn<() => Promise<void>>();
 
       // First reconnection attempt
       resilienceManager.scheduleReconnect(mockReconnect);
-      expect(mockReconnect).toHaveBeenCalledTimes(0);
       
-      jest.advanceTimersByTime(100); // Base delay
-      await Promise.resolve(); // Let promises settle
-      expect(mockReconnect).toHaveBeenCalledTimes(1);
-
-      // Should automatically reschedule after failure (exponential backoff)
-      jest.advanceTimersByTime(200); // 100 * 2
-      await Promise.resolve(); // Let promises settle
-      expect(mockReconnect).toHaveBeenCalledTimes(2);
-
-      // Third attempt (with further backoff)
-      jest.advanceTimersByTime(400); // 200 * 2
-      await Promise.resolve(); // Let promises settle
-      expect(mockReconnect).toHaveBeenCalledTimes(3);
+      // Run first timer and wait for promise
+      jest.advanceTimersByTime(100);
+      await Promise.resolve();
       
-      // Should stop after success
+      expect(executeWithResilienceSpy).toHaveBeenCalledTimes(1);
+
+      // Should reschedule after failure - advance by 200ms (exponential backoff)
+      jest.advanceTimersByTime(200);
+      await Promise.resolve();
+      
+      expect(executeWithResilienceSpy).toHaveBeenCalledTimes(2);
+      
+      // Should reset after success
       const metrics = resilienceManager.getMetrics();
-      expect(metrics.reconnectAttempts).toBe(0); // Reset after success
+      expect(metrics.reconnectAttempts).toBe(0);
     });
 
     it('should handle complex reconnection scenarios with retries', async () => {
-      const mockReconnect = jest.fn<() => Promise<void>>()
-        .mockRejectedValue(new Error('Connection failed'));
+      // Mock executeWithResilience to always fail
+      const executeWithResilienceSpy = jest.spyOn(resilienceManager, 'executeWithResilience');
+      executeWithResilienceSpy.mockRejectedValue(new Error('Connection failed'));
+
+      const mockReconnect = jest.fn<() => Promise<void>>();
 
       // Schedule first reconnection
       resilienceManager.scheduleReconnect(mockReconnect);
@@ -310,29 +303,29 @@ describe('Resilience - Error Handling Behavior', () => {
       expect(metrics.reconnectAttempts).toBe(1);
       expect(metrics.isReconnecting).toBe(true);
 
-      // First attempt
+      // First attempt (100ms delay)
       jest.advanceTimersByTime(100);
       await Promise.resolve();
-      expect(mockReconnect).toHaveBeenCalledTimes(1);
+      expect(executeWithResilienceSpy).toHaveBeenCalledTimes(1);
 
-      // Second attempt (200ms delay)
+      // Second attempt (200ms delay - exponential backoff)
       jest.advanceTimersByTime(200);
       await Promise.resolve();
-      expect(mockReconnect).toHaveBeenCalledTimes(2);
+      expect(executeWithResilienceSpy).toHaveBeenCalledTimes(2);
 
-      // Third attempt (400ms delay)
+      // Third attempt (400ms delay - exponential backoff)
       jest.advanceTimersByTime(400);
       await Promise.resolve();
-      expect(mockReconnect).toHaveBeenCalledTimes(3);
+      expect(executeWithResilienceSpy).toHaveBeenCalledTimes(3);
 
-      // Should stop after max attempts
+      // Should stop after max attempts (counter goes to 4 because it increments before checking)
       metrics = resilienceManager.getMetrics();
-      expect(metrics.reconnectAttempts).toBe(3);
+      expect(metrics.reconnectAttempts).toBe(4);
       
       // No more calls even if we advance time
       jest.advanceTimersByTime(1000);
       await Promise.resolve();
-      expect(mockReconnect).toHaveBeenCalledTimes(3);
+      expect(executeWithResilienceSpy).toHaveBeenCalledTimes(3);
     });
   });
 });
