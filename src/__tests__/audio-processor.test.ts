@@ -282,9 +282,9 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       });
       
       const mockWritable = new Writable({
-        write: jest.fn((_chunk, _encoding, callback: any) => callback()),
+        write: jest.fn((_chunk, _encoding, callback: (error?: Error | null) => void) => callback()),
       });
-      mockWritable.end = mockEnd as any;
+      mockWritable.end = mockEnd as unknown as Writable['end'];
       stream.output = mockWritable as Partial<Writable> as Writable;
       
       // The current implementation doesn't catch errors in finalizeStream
@@ -396,7 +396,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       await processor.finalizeStream('session-1');
       
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringMatching(/audio-output[\\\/]audio-session-1-.*\.raw/), // pcm files get .raw extension
+        expect.stringMatching(/audio-output[\\/]audio-session-1-.*\.raw/), // pcm files get .raw extension
         Buffer.concat([chunk1, chunk2])
       );
     });
@@ -423,7 +423,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
         { recursive: true }
       );
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringMatching(/audio-output[\\\/]audio-session-1-.*\.raw/),
+        expect.stringMatching(/audio-output[\\/]audio-session-1-.*\.raw/),
         expect.any(Buffer)
       );
     });

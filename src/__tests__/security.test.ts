@@ -1,5 +1,5 @@
 import { SecurityValidator, RateLimiter, MemoryManager } from '../security';
-import { AudioFormat } from '../types';
+import { AudioFormat, AudioData } from '../types';
 
 // Mock the logger to avoid console output during tests
 jest.mock('../logger');
@@ -16,13 +16,13 @@ describe('Security Module', () => {
       });
 
       it('should reject invalid audio data structure', () => {
-        expect(SecurityValidator.validateAudioData(null as any)).toBe(false);
-        expect(SecurityValidator.validateAudioData(undefined as any)).toBe(false);
-        expect(SecurityValidator.validateAudioData('string' as any)).toBe(false);
+        expect(SecurityValidator.validateAudioData(null as unknown as AudioData)).toBe(false);
+        expect(SecurityValidator.validateAudioData(undefined as unknown as AudioData)).toBe(false);
+        expect(SecurityValidator.validateAudioData('string' as unknown as AudioData)).toBe(false);
       });
 
       it('should reject missing audio field', () => {
-        const invalidData = { format: AudioFormat.MP3 } as any;
+        const invalidData = { format: AudioFormat.MP3 } as unknown as AudioData;
         expect(SecurityValidator.validateAudioData(invalidData)).toBe(false);
       });
 
@@ -62,9 +62,9 @@ describe('Security Module', () => {
 
       it('should reject invalid session IDs', () => {
         expect(SecurityValidator.validateSessionId('')).toBe(false);
-        expect(SecurityValidator.validateSessionId(null as any)).toBe(false);
-        expect(SecurityValidator.validateSessionId(undefined as any)).toBe(false);
-        expect(SecurityValidator.validateSessionId(123 as any)).toBe(false);
+        expect(SecurityValidator.validateSessionId(null as unknown as string)).toBe(false);
+        expect(SecurityValidator.validateSessionId(undefined as unknown as string)).toBe(false);
+        expect(SecurityValidator.validateSessionId(123 as unknown as string)).toBe(false);
       });
 
       it('should reject session IDs with invalid characters', () => {
