@@ -28,3 +28,13 @@ Thumbs.db
 
 # Coverage reports
 coverage/
+
+# Build output
+dist/
+
+# Claude settings
+.claude/settings.local.json
+
+# Phase 2/3 development files
+*.phase2
+*.phase3
