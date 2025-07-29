@@ -7,9 +7,26 @@ import express from 'express';
 // Mock dependencies
 jest.mock('redis');
 jest.mock('../logger');
-jest.mock('../metrics');
-jest.mock('../audio-processor');
-jest.mock('../resilience');
+jest.mock('../metrics', () => ({
+  setupMetrics: jest.fn(),
+}));
+jest.mock('../audio-processor', () => ({
+  AudioProcessor: jest.fn().mockImplementation(() => ({
+    createStream: jest.fn(),
+    processChunk: jest.fn(),
+    finalizeStream: jest.fn(),
+    cleanup: jest.fn(),
+  }))
+}));
+jest.mock('../resilience', () => ({
+  ResilienceManager: jest.fn().mockImplementation(() => ({
+    executeWithResilience: jest.fn(),
+    scheduleReconnect: jest.fn(),
+    handleError: jest.fn(),
+    resetRetryCount: jest.fn(),
+    getMetrics: jest.fn(),
+  }))
+}));
 jest.mock('express', () => {
   const mockApp = {
     use: jest.fn(),

@@ -14,6 +14,16 @@ global.console = {
   error: console.error,
 };
 
+// Mock the speaker module to prevent audio hardware access
+jest.mock('speaker', () => {
+  return jest.fn().mockImplementation(() => ({
+    write: jest.fn().mockReturnValue(true),
+    end: jest.fn(),
+    once: jest.fn(),
+    on: jest.fn(),
+  }));
+});
+
 // Clean up after each test
 afterEach(() => {
   jest.clearAllMocks();
