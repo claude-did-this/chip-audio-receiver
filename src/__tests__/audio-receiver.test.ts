@@ -11,10 +11,10 @@ jest.mock('../metrics', () => ({
 }));
 jest.mock('../audio-processor', () => ({
   AudioProcessor: jest.fn().mockImplementation(() => ({
-    createStream: jest.fn() as any,
-    processChunk: jest.fn() as any,
-    finalizeStream: jest.fn() as any,
-    cleanup: jest.fn() as any,
+    createStream: jest.fn(),
+    processChunk: jest.fn(),
+    finalizeStream: jest.fn(),
+    cleanup: jest.fn(),
   }))
 }));
 jest.mock('../resilience', () => ({
@@ -35,7 +35,7 @@ jest.mock('express', () => {
       return { close: jest.fn() };
     }),
   };
-  const express = jest.fn(() => mockApp) as any;
+  const express = jest.fn(() => mockApp);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (express as any).json = jest.fn();
   return express;
@@ -90,11 +90,11 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     
     // Mock process.exit
     originalExit = process.exit;
-    process.exit = jest.fn() as any;
+    process.exit = jest.fn() as unknown as typeof process.exit;
     
     // Setup Redis client mock
     mockConnect = jest.fn(() => Promise.resolve());
-    mockSubscribe = jest.fn(() => Promise.resolve()) as any;
+    mockSubscribe = jest.fn(() => Promise.resolve());
     mockDisconnect = jest.fn(() => Promise.resolve());
     
     mockRedisClient = {
@@ -200,6 +200,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
   describe('Message Subscription', () => {
     it('should process voice response messages from Redis', async () => {
       let messageHandler: ((message: string) => void) | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (mockSubscribe as any).mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
@@ -236,6 +237,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
     it('should handle malformed messages gracefully', async () => {
       let messageHandler: ((message: string) => void) | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (mockSubscribe as any).mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
@@ -345,10 +347,11 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
       // Get the shutdown handler
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sigintHandler = process.listeners('SIGINT')[process.listeners('SIGINT').length - 1] as any;
       
       // Trigger shutdown
-      await sigintHandler();
+      await sigintHandler('SIGINT');
 
       expect(cleanupSpy).toHaveBeenCalled();
       expect(mockDisconnect).toHaveBeenCalled();
@@ -368,11 +371,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
       // Get the shutdown handler
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sigintHandler = process.listeners('SIGINT')[process.listeners('SIGINT').length - 1] as any;
       
       // Trigger shutdown - cleanup errors should be caught
       try {
-        await sigintHandler();
+        await sigintHandler('SIGINT');
       } catch (error) {
         // Expected - disconnect failed
         expect((error as Error).message).toBe('Disconnect failed');
@@ -451,6 +455,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
   describe('Message Processing', () => {
     it('should create audio stream on first message', async () => {
       let messageHandler: ((message: string) => void) | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (mockSubscribe as any).mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
@@ -492,6 +497,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
     it('should process audio chunks in order', async () => {
       let messageHandler: ((message: string) => void) | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (mockSubscribe as any).mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
@@ -534,6 +540,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
     it('should finalize stream on final message', async () => {
       let messageHandler: ((message: string) => void) | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (mockSubscribe as any).mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
@@ -575,6 +582,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
     it('should handle concurrent messages for different sessions', async () => {
       let messageHandler: ((message: string) => void) | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (mockSubscribe as any).mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
