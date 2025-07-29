@@ -72,7 +72,7 @@ class Phase1Demo {
     });
 
     this.syncManager.on('hideSubtitle', (_sessionId: string, _subtitle: any) => {
-      console.log(`💬 Hide subtitle`);
+      console.log('💬 Hide subtitle');
     });
 
     this.udpServer.on('sessionEnd', (sessionId: string, statistics: any) => {
@@ -145,7 +145,7 @@ class Phase1Demo {
       finalPacket.isLast = true;
       const finalSerialized = this.serializeAudioPacket(finalPacket);
       client.send(finalSerialized, serverAddress.port, '127.0.0.1');
-      console.log(`📡 Sent final packet (isLast=true)`);
+      console.log('📡 Sent final packet (isLast=true)');
 
       setTimeout(() => client.close(), 1000);
     }
