@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { jest } from '@jest/globals';
 import { AudioReceiver } from '../index';
 import { createClient } from 'redis';
@@ -13,7 +14,7 @@ jest.mock('express', () => {
   const mockApp = {
     use: jest.fn(),
     get: jest.fn(),
-    listen: jest.fn((_port: number, callback: Function) => {
+    listen: jest.fn((_port: number, callback: () => void) => {
       if (callback) callback();
       return { close: jest.fn() };
     }),
@@ -236,7 +237,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       const mockListen = jest.fn((_port: any, callback: any) => callback());
       mockApp.listen = mockListen as any;
 
-      // @ts-ignore - accessing private property for test
+      // @ts-expect-error - accessing private property for test
       audioReceiver.app = mockApp;
 
       await audioReceiver.start();
