@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { jest } from '@jest/globals';
 import { AudioReceiver } from '../index';
-import { createClient } from 'redis';
-import express from 'express';
+import { createClient, RedisClientType } from 'redis';
+import express, { Request, Response, Express } from 'express';
 
 // Mock dependencies
 jest.mock('redis');
@@ -36,7 +35,7 @@ jest.mock('express', () => {
       return { close: jest.fn() };
     }),
   };
-  const express = jest.fn(() => mockApp);
+  const express = jest.fn(() => mockApp) as unknown as typeof import('express').default;
   (express as any).json = jest.fn();
   return express;
 });
@@ -78,18 +77,27 @@ jest.mock('../config', () => ({
 
 describe('AudioReceiver - Server Connection Behavior', () => {
   let audioReceiver: AudioReceiver;
-  let mockRedisClient: any;
+  let mockRedisClient: Partial<RedisClientType> & {
+    connect: jest.Mock;
+    subscribe: jest.Mock;
+    pSubscribe: jest.Mock;
+    unsubscribe: jest.Mock;
+    disconnect: jest.Mock;
+    on: jest.Mock;
+    off: jest.Mock;
+    isOpen: boolean;
+  };
   let mockConnect: jest.Mock;
   let mockSubscribe: jest.Mock;
   let mockDisconnect: jest.Mock;
-  let originalExit: any;
+  let originalExit: typeof process.exit;
 
   beforeEach(() => {
     jest.clearAllMocks();
     
     // Mock process.exit
     originalExit = process.exit;
-    process.exit = jest.fn() as any;
+    process.exit = jest.fn() as typeof process.exit;
     
     // Setup Redis client mock
     mockConnect = jest.fn();
@@ -99,13 +107,16 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     mockRedisClient = {
       connect: mockConnect,
       subscribe: mockSubscribe,
+      pSubscribe: jest.fn(),
+      unsubscribe: jest.fn(),
       disconnect: mockDisconnect,
       on: jest.fn(),
+      off: jest.fn(),
       isOpen: true,
     };
 
     const mockCreateClient = jest.mocked(createClient);
-    mockCreateClient.mockReturnValue(mockRedisClient as any);
+    mockCreateClient.mockReturnValue(mockRedisClient as RedisClientType);
 
     audioReceiver = new AudioReceiver();
   });
@@ -143,7 +154,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
     it('should handle Redis connection errors', async () => {
       const errorHandler = jest.fn();
-      mockRedisClient.on.mockImplementation((event: string, handler: any) => {
+      mockRedisClient.on.mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
         if (event === 'error') {
           errorHandler.mockImplementation(handler);
         }
@@ -159,8 +170,8 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     });
 
     it('should handle Redis disconnection and attempt reconnection', async () => {
-      let disconnectHandler: any;
-      mockRedisClient.on.mockImplementation((event: string, handler: any) => {
+      let disconnectHandler: () => void;
+      mockRedisClient.on.mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
         if (event === 'disconnect') {
           disconnectHandler = handler;
         }
@@ -176,11 +187,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     });
 
     it('should reset retry count on successful connection', async () => {
-      let connectHandler: any;
-      mockRedisClient.on.mockImplementation((event: string, handler: any) => {
+      let connectHandler: () => void;
+      mockRedisClient.on.mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
         if (event === 'connect') {
-          connectHandler = handler;
+          connectHandler = handler as () => void;
         }
+        return mockRedisClient as RedisClientType;
       });
 
       await audioReceiver.start();
@@ -194,9 +206,8 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
   describe('Message Subscription', () => {
     it('should process voice response messages from Redis', async () => {
-      let messageHandler: any;
-      mockSubscribe.mockImplementation((...args: any[]) => {
-        const [channel, handler] = args;
+      let messageHandler: (message: string) => void;
+      mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
@@ -230,9 +241,8 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     });
 
     it('should handle malformed messages gracefully', async () => {
-      let messageHandler: any;
-      mockSubscribe.mockImplementation((...args: any[]) => {
-        const [channel, handler] = args;
+      let messageHandler: (message: string) => void;
+      mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
@@ -251,11 +261,11 @@ describe('AudioReceiver - Server Connection Behavior', () => {
   describe('Health Monitoring', () => {
     it('should expose health endpoint', async () => {
       const mockApp = express();
-      const mockListen = jest.fn((_port: any, callback: any) => callback());
-      mockApp.listen = mockListen as any;
+      const mockListen = jest.fn((_port: number, callback: () => void) => callback());
+      mockApp.listen = mockListen as Express['listen'];
 
-      // @ts-expect-error - accessing private property for test
-      audioReceiver.app = mockApp;
+      // Accessing private property for test - this is a test-only scenario
+      (audioReceiver as any).app = mockApp;
 
       await audioReceiver.start();
 
@@ -268,17 +278,17 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       // Find the health handler that was registered
       const mockApp = jest.mocked(express)();
       const getMock = mockApp.get as jest.Mock;
-      const getCall = getMock.mock.calls.find((call: any[]) => call[0] === '/health');
+      const getCall = getMock.mock.calls.find((call: unknown[]) => call[0] === '/health');
       expect(getCall).toBeDefined();
       
-      const healthHandler = getCall![1] as any;
+      const healthHandler = getCall![1] as (req: Request, res: Response) => void;
       const mockReq = {};
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      healthHandler(mockReq as any, mockRes as any);
+      healthHandler(mockReq as Request, mockRes as Response);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(
@@ -299,17 +309,17 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       // Find the health handler that was registered
       const mockApp = jest.mocked(express)();
       const getMock = mockApp.get as jest.Mock;
-      const getCall = getMock.mock.calls.find((call: any[]) => call[0] === '/health');
+      const getCall = getMock.mock.calls.find((call: unknown[]) => call[0] === '/health');
       expect(getCall).toBeDefined();
       
-      const healthHandler = getCall![1] as any;
+      const healthHandler = getCall![1] as (req: Request, res: Response) => void;
       const mockReq = {};
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      healthHandler(mockReq as any, mockRes as any);
+      healthHandler(mockReq as Request, mockRes as Response);
 
       expect(mockRes.status).toHaveBeenCalledWith(503);
       expect(mockRes.json).toHaveBeenCalledWith(
@@ -327,6 +337,232 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       // Verify that signal handlers were set up
       expect(process.listenerCount('SIGINT')).toBeGreaterThan(0);
       expect(process.listenerCount('SIGTERM')).toBeGreaterThan(0);
+    });
+
+    it('should cleanup resources on shutdown', async () => {
+      await audioReceiver.start();
+
+      const mockAudioProcessor = (audioReceiver as any).audioProcessor;
+      const cleanupSpy = jest.spyOn(mockAudioProcessor, 'cleanup');
+      const mockServer = { close: jest.fn() };
+      (audioReceiver as any).metricsServer = mockServer;
+
+      // Trigger shutdown
+      await audioReceiver.stop();
+
+      expect(cleanupSpy).toHaveBeenCalled();
+      expect(mockDisconnect).toHaveBeenCalled();
+      expect(mockServer.close).toHaveBeenCalled();
+    });
+
+    it('should handle cleanup errors gracefully', async () => {
+      await audioReceiver.start();
+
+      const mockAudioProcessor = (audioReceiver as any).audioProcessor;
+      jest.spyOn(mockAudioProcessor, 'cleanup').mockRejectedValueOnce(new Error('Cleanup failed'));
+      mockDisconnect.mockRejectedValueOnce(new Error('Disconnect failed'));
+
+      // Should not throw even if cleanup fails
+      await expect(audioReceiver.stop()).resolves.not.toThrow();
+    });
+
+    it('should cleanup on process signals', async () => {
+      await audioReceiver.start();
+      
+      const stopSpy = jest.spyOn(audioReceiver, 'stop');
+      
+      // Emit SIGINT
+      process.emit('SIGINT');
+      
+      expect(stopSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Authentication', () => {
+    it('should handle Redis authentication failures', async () => {
+      mockConnect.mockRejectedValueOnce(new Error('WRONGPASS invalid username-password pair'));
+
+      await expect(audioReceiver.start()).rejects.toThrow('WRONGPASS');
+    });
+
+    it('should connect with password when provided', async () => {
+      process.env.REDIS_PASSWORD = 'test-password';
+      
+      // Re-create receiver to pick up new env
+      audioReceiver = new AudioReceiver();
+      
+      await audioReceiver.start();
+
+      expect(createClient).toHaveBeenCalledWith({
+        socket: {
+          host: 'localhost',
+          port: 6379,
+        },
+        password: 'test-password',
+      });
+    });
+
+    it('should handle authentication timeout', async () => {
+      mockConnect.mockImplementationOnce(() => 
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Connection timeout')), 100)
+        )
+      );
+
+      await expect(audioReceiver.start()).rejects.toThrow('Connection timeout');
+    });
+  });
+
+  describe('Message Processing', () => {
+    it('should create audio stream on first message', async () => {
+      let messageHandler: (message: string) => void;
+      mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
+        if (channel === 'chip.voice.responses') {
+          messageHandler = handler;
+        }
+      });
+
+      await audioReceiver.start();
+
+      const testMessage = JSON.stringify({
+        id: 'msg-123',
+        type: 'AUDIO_OUTPUT',
+        service: 'cartesia',
+        sessionId: 'session-123',
+        timestamp: new Date().toISOString(),
+        data: {
+          audio: Buffer.from('test-audio').toString('base64'),
+          format: 'pcm',
+        },
+        metadata: {
+          correlationId: 'corr-123',
+          sampleRate: 44100,
+          isFirst: true,
+          isFinal: false,
+        },
+      });
+
+      const mockAudioProcessor = (audioReceiver as any).audioProcessor;
+      const createStreamSpy = jest.spyOn(mockAudioProcessor, 'createStream');
+
+      messageHandler!(testMessage);
+
+      expect(createStreamSpy).toHaveBeenCalledWith('session-123', 'pcm', 44100);
+    });
+
+    it('should process audio chunks in order', async () => {
+      let messageHandler: (message: string) => void;
+      mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
+        if (channel === 'chip.voice.responses') {
+          messageHandler = handler;
+        }
+      });
+
+      await audioReceiver.start();
+
+      const mockAudioProcessor = (audioReceiver as any).audioProcessor;
+      const processChunkSpy = jest.spyOn(mockAudioProcessor, 'processChunk');
+
+      const chunks = ['chunk1', 'chunk2', 'chunk3'];
+      chunks.forEach((chunk, index) => {
+        const message = JSON.stringify({
+          id: `msg-${index}`,
+          type: 'AUDIO_OUTPUT',
+          service: 'cartesia',
+          sessionId: 'session-123',
+          timestamp: new Date().toISOString(),
+          data: {
+            audio: Buffer.from(chunk).toString('base64'),
+            format: 'pcm',
+          },
+          metadata: {
+            correlationId: 'corr-123',
+            sampleRate: 44100,
+            isFirst: index === 0,
+            isFinal: false,
+          },
+        });
+        messageHandler!(message);
+      });
+
+      expect(processChunkSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should finalize stream on final message', async () => {
+      let messageHandler: (message: string) => void;
+      mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
+        if (channel === 'chip.voice.responses') {
+          messageHandler = handler;
+        }
+      });
+
+      await audioReceiver.start();
+
+      const mockAudioProcessor = (audioReceiver as any).audioProcessor;
+      const finalizeStreamSpy = jest.spyOn(mockAudioProcessor, 'finalizeStream');
+
+      const finalMessage = JSON.stringify({
+        id: 'msg-final',
+        type: 'AUDIO_OUTPUT',
+        service: 'cartesia',
+        sessionId: 'session-123',
+        timestamp: new Date().toISOString(),
+        data: {
+          audio: Buffer.from('final-chunk').toString('base64'),
+          format: 'pcm',
+        },
+        metadata: {
+          correlationId: 'corr-123',
+          sampleRate: 44100,
+          isFirst: false,
+          isFinal: true,
+        },
+      });
+
+      messageHandler!(finalMessage);
+
+      expect(finalizeStreamSpy).toHaveBeenCalledWith('session-123');
+    });
+
+    it('should handle concurrent messages for different sessions', async () => {
+      let messageHandler: (message: string) => void;
+      mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
+        if (channel === 'chip.voice.responses') {
+          messageHandler = handler;
+        }
+      });
+
+      await audioReceiver.start();
+
+      const mockAudioProcessor = (audioReceiver as any).audioProcessor;
+      const createStreamSpy = jest.spyOn(mockAudioProcessor, 'createStream');
+
+      const sessions = ['session-1', 'session-2', 'session-3'];
+      sessions.forEach(sessionId => {
+        const message = JSON.stringify({
+          id: `msg-${sessionId}`,
+          type: 'AUDIO_OUTPUT',
+          service: 'cartesia',
+          sessionId,
+          timestamp: new Date().toISOString(),
+          data: {
+            audio: Buffer.from(`audio-${sessionId}`).toString('base64'),
+            format: 'pcm',
+          },
+          metadata: {
+            correlationId: `corr-${sessionId}`,
+            sampleRate: 44100,
+            isFirst: true,
+            isFinal: false,
+          },
+        });
+        messageHandler!(message);
+      });
+
+      expect(createStreamSpy).toHaveBeenCalledTimes(3);
+      sessions.forEach(sessionId => {
+        expect(createStreamSpy).toHaveBeenCalledWith(sessionId, 'pcm', 44100);
+      });
     });
   });
 });

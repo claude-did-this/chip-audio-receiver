@@ -99,11 +99,12 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       // Create a mock writable stream that simulates backpressure
       const mockWritable = {
         write: jest.fn().mockReturnValue(false),
-        once: jest.fn((event, callback) => {
+        once: jest.fn((event: string, callback: (...args: any[]) => void) => {
           if (event === 'drain') {
             // Simulate drain event after a short delay
-            setTimeout(callback as () => void, 10);
+            setTimeout(callback, 10);
           }
+          return mockWritable;
         }),
       };
 
@@ -144,7 +145,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       const mockEnd = jest.fn();
       
       const stream = await audioProcessor.createStream(sessionId, 'pcm', 44100);
-      stream.output = { end: mockEnd } as unknown as Writable;
+      stream.output = { end: mockEnd } as Partial<Writable> as Writable;
 
       await audioProcessor.finalizeStream(sessionId);
 
@@ -156,7 +157,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       const mockKill = jest.fn();
       
       const stream = await audioProcessor.createStream(sessionId, 'pcm', 44100);
-      stream.output = { kill: mockKill } as unknown as ChildProcess;
+      stream.output = { kill: mockKill } as Partial<ChildProcess> as ChildProcess;
 
       await audioProcessor.finalizeStream(sessionId);
 
@@ -221,6 +222,221 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       sessions.forEach(sessionId => {
         expect(finalizeSpy).toHaveBeenCalledWith(sessionId);
       });
+    });
+
+    it('should verify all resources are released after cleanup', async () => {
+      const sessions = ['session-1', 'session-2'];
+      const mockEnd = jest.fn();
+      
+      // Create streams with mock outputs
+      for (const sessionId of sessions) {
+        const stream = await audioProcessor.createStream(sessionId, 'pcm', 44100);
+        stream.output = { end: mockEnd } as Partial<Writable> as Writable;
+      }
+
+      await audioProcessor.cleanup();
+
+      // Verify all outputs were closed
+      expect(mockEnd).toHaveBeenCalledTimes(sessions.length);
+      
+      // Verify no streams remain
+      await expect(
+        audioProcessor.processChunk('session-1', Buffer.from('data'), 'pcm')
+      ).rejects.toThrow('No stream found for session session-1');
+    });
+
+    it('should handle cleanup with no active streams', async () => {
+      // Should not throw when no streams exist
+      await expect(audioProcessor.cleanup()).resolves.not.toThrow();
+    });
+
+    it('should handle errors during stream finalization', async () => {
+      const sessionId = 'session-error';
+      await audioProcessor.createStream(sessionId, 'pcm', 44100);
+      
+      // Mock finalizeStream to throw
+      jest.spyOn(audioProcessor, 'finalizeStream')
+        .mockRejectedValueOnce(new Error('Finalization failed'));
+
+      // Cleanup should complete despite errors
+      await expect(audioProcessor.cleanup()).resolves.not.toThrow();
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle errors when creating speaker output', async () => {
+      const mockSpeaker = jest.mocked(Speaker);
+      mockSpeaker.mockImplementationOnce(() => {
+        throw new Error('Audio device not found');
+      });
+
+      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } });
+
+      await expect(
+        audioProcessor.createStream('session-1', 'pcm', 44100)
+      ).rejects.toThrow('Audio device not found');
+    });
+
+    it('should handle write errors gracefully', async () => {
+      const sessionId = 'test-session-123';
+      const audioData = Buffer.from('test-audio-data');
+      
+      // Create a mock writable stream that throws on write
+      const mockWritable = {
+        write: jest.fn().mockImplementation(() => {
+          throw new Error('Write failed');
+        }),
+        once: jest.fn(),
+      };
+
+      const stream = await audioProcessor.createStream(sessionId, 'pcm', 44100);
+      stream.output = mockWritable as Partial<Writable> as Writable;
+
+      await expect(
+        audioProcessor.processChunk(sessionId, audioData, 'pcm')
+      ).rejects.toThrow('Write failed');
+    });
+
+    it('should handle format mismatches', async () => {
+      const sessionId = 'test-session-123';
+      const audioData = Buffer.from('test-audio-data');
+      
+      await audioProcessor.createStream(sessionId, 'pcm', 44100);
+
+      // Try to process with different format
+      await expect(
+        audioProcessor.processChunk(sessionId, audioData, 'mp3')
+      ).rejects.toThrow();
+    });
+
+    it('should handle invalid audio formats', async () => {
+      const sessionId = 'test-session-123';
+      
+      await expect(
+        audioProcessor.createStream(sessionId, 'invalid-format' as any, 44100)
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('File Output', () => {
+    let mockWriteFileSync: jest.Mock;
+    let mockExistsSync: jest.Mock;
+    let mockMkdirSync: jest.Mock;
+
+    beforeEach(() => {
+      const fs = require('fs');
+      mockWriteFileSync = fs.writeFileSync = jest.fn();
+      mockExistsSync = fs.existsSync = jest.fn().mockReturnValue(true);
+      mockMkdirSync = fs.mkdirSync = jest.fn();
+    });
+
+    it('should save audio chunks to file when saveToFile is enabled', async () => {
+      audioProcessor = new AudioProcessor({ 
+        ...mockConfig, 
+        saveToFile: true,
+        output: { type: 'file', device: undefined } 
+      });
+
+      const sessionId = 'test-session-123';
+      const audioData = Buffer.from('test-audio-data');
+      
+      const stream = await audioProcessor.createStream(sessionId, 'pcm', 44100);
+      await audioProcessor.processChunk(sessionId, audioData, 'pcm');
+
+      expect(stream.buffer).toContain(audioData);
+    });
+
+    it('should write file on stream finalization', async () => {
+      audioProcessor = new AudioProcessor({ 
+        ...mockConfig, 
+        saveToFile: true,
+        output: { type: 'file', device: undefined } 
+      });
+
+      const sessionId = 'test-session-123';
+      const audioData = Buffer.from('test-audio-data');
+      
+      await audioProcessor.createStream(sessionId, 'pcm', 44100);
+      await audioProcessor.processChunk(sessionId, audioData, 'pcm');
+      await audioProcessor.finalizeStream(sessionId);
+
+      expect(mockWriteFileSync).toHaveBeenCalled();
+    });
+
+    it('should create output directory if it does not exist', async () => {
+      mockExistsSync.mockReturnValue(false);
+
+      audioProcessor = new AudioProcessor({ 
+        ...mockConfig, 
+        saveToFile: true,
+        output: { type: 'file', device: undefined } 
+      });
+
+      const sessionId = 'test-session-123';
+      await audioProcessor.createStream(sessionId, 'pcm', 44100);
+      await audioProcessor.finalizeStream(sessionId);
+
+      expect(mockMkdirSync).toHaveBeenCalled();
+    });
+  });
+
+  describe('Concurrent Operations', () => {
+    it('should handle concurrent writes to same session', async () => {
+      const sessionId = 'test-session-123';
+      const chunks = Array.from({ length: 10 }, (_, i) => 
+        Buffer.from(`chunk-${i}`)
+      );
+
+      await audioProcessor.createStream(sessionId, 'pcm', 44100);
+
+      // Process chunks concurrently
+      await Promise.all(
+        chunks.map(chunk => 
+          audioProcessor.processChunk(sessionId, chunk, 'pcm')
+        )
+      );
+
+      // All chunks should be processed without error
+      expect(true).toBe(true); // If we get here, no errors were thrown
+    });
+
+    it('should handle concurrent stream creation for different sessions', async () => {
+      const sessions = Array.from({ length: 5 }, (_, i) => `session-${i}`);
+
+      // Create streams concurrently
+      const streams = await Promise.all(
+        sessions.map(sessionId => 
+          audioProcessor.createStream(sessionId, 'pcm', 44100)
+        )
+      );
+
+      expect(streams).toHaveLength(5);
+      streams.forEach((stream, index) => {
+        expect(stream.sessionId).toBe(`session-${index}`);
+      });
+    });
+
+    it('should handle concurrent finalization', async () => {
+      const sessions = ['session-1', 'session-2', 'session-3'];
+
+      // Create streams
+      for (const sessionId of sessions) {
+        await audioProcessor.createStream(sessionId, 'pcm', 44100);
+      }
+
+      // Finalize concurrently
+      await Promise.all(
+        sessions.map(sessionId => 
+          audioProcessor.finalizeStream(sessionId)
+        )
+      );
+
+      // All streams should be finalized
+      for (const sessionId of sessions) {
+        await expect(
+          audioProcessor.processChunk(sessionId, Buffer.from('data'), 'pcm')
+        ).rejects.toThrow(`No stream found for session ${sessionId}`);
+      }
     });
   });
 });
