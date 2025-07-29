@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { AudioReceiver } from '../index';
-import { createClient, RedisClientType } from 'redis';
+import { createClient } from 'redis';
 import express, { Request, Response, Express } from 'express';
 
 // Mock dependencies
@@ -78,16 +78,7 @@ jest.mock('../config', () => ({
 
 describe('AudioReceiver - Server Connection Behavior', () => {
   let audioReceiver: AudioReceiver;
-  let mockRedisClient: Partial<RedisClientType> & {
-    connect: jest.Mock;
-    subscribe: jest.Mock;
-    pSubscribe: jest.Mock;
-    unsubscribe: jest.Mock;
-    disconnect: jest.Mock;
-    on: jest.Mock;
-    off: jest.Mock;
-    isOpen: boolean;
-  };
+  let mockRedisClient: any;
   let mockConnect: jest.Mock;
   let mockSubscribe: jest.Mock;
   let mockDisconnect: jest.Mock;
@@ -117,7 +108,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     };
 
     const mockCreateClient = jest.mocked(createClient);
-    mockCreateClient.mockReturnValue(mockRedisClient as RedisClientType);
+    mockCreateClient.mockReturnValue(mockRedisClient);
 
     audioReceiver = new AudioReceiver();
   });
@@ -193,7 +184,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
         if (event === 'connect') {
           connectHandler = handler as () => void;
         }
-        return mockRedisClient as RedisClientType;
+        return mockRedisClient;
       });
 
       await audioReceiver.start();
@@ -207,11 +198,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
   describe('Message Subscription', () => {
     it('should process voice response messages from Redis', async () => {
-      let messageHandler: (message: string) => void;
+      let messageHandler: ((message: string) => void) | undefined;
       mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
+        return Promise.resolve();
       });
 
       await audioReceiver.start();
@@ -235,27 +227,28 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       });
 
       // Send test message
-      messageHandler(testMessage);
+      messageHandler!(testMessage);
 
       // Message should be processed without throwing
-      expect(() => messageHandler(testMessage)).not.toThrow();
+      expect(() => messageHandler!(testMessage)).not.toThrow();
     });
 
     it('should handle malformed messages gracefully', async () => {
-      let messageHandler: (message: string) => void;
+      let messageHandler: ((message: string) => void) | undefined;
       mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
+        return Promise.resolve();
       });
 
       await audioReceiver.start();
 
       // Send malformed JSON
-      expect(() => messageHandler('invalid json')).not.toThrow();
+      expect(() => messageHandler!('invalid json')).not.toThrow();
       
       // Send message with missing required fields
-      expect(() => messageHandler('{}')).not.toThrow();
+      expect(() => messageHandler!('{}')).not.toThrow();
     });
   });
 
@@ -263,7 +256,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     it('should expose health endpoint', async () => {
       const mockApp = express();
       const mockListen = jest.fn((_port: number, callback: () => void) => callback());
-      mockApp.listen = mockListen as Express['listen'];
+      mockApp.listen = mockListen as any;
 
       // Accessing private property for test - this is a test-only scenario
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -290,7 +283,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
         json: jest.fn(),
       };
 
-      healthHandler(mockReq as Request, mockRes as Response);
+      healthHandler(mockReq as unknown as Request, mockRes as unknown as Response);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(
@@ -321,7 +314,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
         json: jest.fn(),
       };
 
-      healthHandler(mockReq as Request, mockRes as Response);
+      healthHandler(mockReq as unknown as Request, mockRes as unknown as Response);
 
       expect(mockRes.status).toHaveBeenCalledWith(503);
       expect(mockRes.json).toHaveBeenCalledWith(
@@ -421,11 +414,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
   describe('Message Processing', () => {
     it('should create audio stream on first message', async () => {
-      let messageHandler: (message: string) => void;
+      let messageHandler: ((message: string) => void) | undefined;
       mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
+        return Promise.resolve();
       });
 
       await audioReceiver.start();
@@ -458,11 +452,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     });
 
     it('should process audio chunks in order', async () => {
-      let messageHandler: (message: string) => void;
+      let messageHandler: ((message: string) => void) | undefined;
       mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
+        return Promise.resolve();
       });
 
       await audioReceiver.start();
@@ -497,11 +492,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     });
 
     it('should finalize stream on final message', async () => {
-      let messageHandler: (message: string) => void;
+      let messageHandler: ((message: string) => void) | undefined;
       mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
+        return Promise.resolve();
       });
 
       await audioReceiver.start();
@@ -534,11 +530,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     });
 
     it('should handle concurrent messages for different sessions', async () => {
-      let messageHandler: (message: string) => void;
+      let messageHandler: ((message: string) => void) | undefined;
       mockSubscribe.mockImplementation((channel: string, handler: (message: string) => void) => {
         if (channel === 'chip.voice.responses') {
           messageHandler = handler;
         }
+        return Promise.resolve();
       });
 
       await audioReceiver.start();
