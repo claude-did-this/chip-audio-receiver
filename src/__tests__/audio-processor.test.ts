@@ -99,7 +99,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       // Create a mock writable stream that simulates backpressure
       const mockWritable = {
         write: jest.fn().mockReturnValue(false),
-        once: jest.fn((event: string, callback: (...args: any[]) => void) => {
+        once: jest.fn((event: string, callback: (...args: unknown[]) => void) => {
           if (event === 'drain') {
             // Simulate drain event after a short delay
             setTimeout(callback, 10);
@@ -313,6 +313,8 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       const sessionId = 'test-session-123';
       
       await expect(
+        // Testing invalid format - type assertion needed for test
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         audioProcessor.createStream(sessionId, 'invalid-format' as any, 44100)
       ).rejects.toThrow();
     });
@@ -324,6 +326,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
     let mockMkdirSync: jest.Mock;
 
     beforeEach(() => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const fs = require('fs');
       mockWriteFileSync = fs.writeFileSync = jest.fn();
       mockExistsSync = fs.existsSync = jest.fn().mockReturnValue(true);

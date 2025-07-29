@@ -36,6 +36,7 @@ jest.mock('express', () => {
     }),
   };
   const express = jest.fn(() => mockApp) as unknown as typeof import('express').default;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (express as any).json = jest.fn();
   return express;
 });
@@ -265,6 +266,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
       mockApp.listen = mockListen as Express['listen'];
 
       // Accessing private property for test - this is a test-only scenario
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (audioReceiver as any).app = mockApp;
 
       await audioReceiver.start();
@@ -342,9 +344,12 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     it('should cleanup resources on shutdown', async () => {
       await audioReceiver.start();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockAudioProcessor = (audioReceiver as any).audioProcessor;
       const cleanupSpy = jest.spyOn(mockAudioProcessor, 'cleanup');
       const mockServer = { close: jest.fn() };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (audioReceiver as any).metricsServer = mockServer;
 
       // Trigger shutdown
@@ -358,6 +363,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
     it('should handle cleanup errors gracefully', async () => {
       await audioReceiver.start();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockAudioProcessor = (audioReceiver as any).audioProcessor;
       jest.spyOn(mockAudioProcessor, 'cleanup').mockRejectedValueOnce(new Error('Cleanup failed'));
       mockDisconnect.mockRejectedValueOnce(new Error('Disconnect failed'));
@@ -442,6 +448,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockAudioProcessor = (audioReceiver as any).audioProcessor;
       const createStreamSpy = jest.spyOn(mockAudioProcessor, 'createStream');
 
@@ -460,6 +467,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
       await audioReceiver.start();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockAudioProcessor = (audioReceiver as any).audioProcessor;
       const processChunkSpy = jest.spyOn(mockAudioProcessor, 'processChunk');
 
@@ -498,6 +506,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
       await audioReceiver.start();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockAudioProcessor = (audioReceiver as any).audioProcessor;
       const finalizeStreamSpy = jest.spyOn(mockAudioProcessor, 'finalizeStream');
 
@@ -534,6 +543,7 @@ describe('AudioReceiver - Server Connection Behavior', () => {
 
       await audioReceiver.start();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockAudioProcessor = (audioReceiver as any).audioProcessor;
       const createStreamSpy = jest.spyOn(mockAudioProcessor, 'createStream');
 
