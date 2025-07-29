@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { AudioData, AudioFormat } from './types';
 import { logger } from './logger';
 
@@ -59,8 +58,10 @@ export class SecurityValidator {
   }
 
   static sanitizeFilePath(filename: string): string {
-    // Extract just the filename without any path components
-    const basename = path.basename(filename);
+    // Handle both Unix and Windows path separators by extracting the basename
+    // Split on both / and \ to handle cross-platform paths
+    const parts = filename.split(/[/\\]/);
+    const basename = parts[parts.length - 1];
     
     // Remove any potentially dangerous characters
     const sanitized = basename.replace(/[^a-zA-Z0-9.-]/g, '-');
