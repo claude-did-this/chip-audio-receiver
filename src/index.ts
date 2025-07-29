@@ -19,6 +19,7 @@ import {
 import { setupMetrics } from './metrics';
 import { AudioProcessor } from './audio-processor';
 import { ResilienceManager } from './resilience';
+import { SecurityValidator, RateLimiter, MemoryManager } from './security';
 
 class AudioReceiver {
   private redisClient: RedisClientType | null = null;
@@ -28,12 +29,18 @@ class AudioReceiver {
   private isShuttingDown = false;
   private startTime = Date.now();
   private activeStreams = new Map<string, AudioStream>();
+  private rateLimiter: RateLimiter;
+  private memoryManager: MemoryManager;
+  private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.audioProcessor = new AudioProcessor(config.audio);
+    this.memoryManager = new MemoryManager();
+    this.audioProcessor = new AudioProcessor(config.audio, this.memoryManager);
     this.resilienceManager = new ResilienceManager(config.resilience);
     this.app = express();
+    this.rateLimiter = new RateLimiter(60000, 100); // 100 requests per minute
     this.setupExpress();
+    this.startCleanupProcess();
   }
 
   async start(): Promise<void> {
@@ -132,6 +139,12 @@ class AudioReceiver {
     try {
       const response: VoiceResponseMessage = JSON.parse(message);
       
+      // Validate session ID
+      if (!SecurityValidator.validateSessionId(response.sessionId)) {
+        logger.warn('Invalid session ID received', { sessionId: response.sessionId });
+        return;
+      }
+      
       logger.debug('Received voice response', {
         id: response.id,
         type: response.type,
@@ -160,6 +173,12 @@ class AudioReceiver {
 
   private async handleAudioOutput(message: AudioOutputMessage): Promise<void> {
     const { id, sessionId, service, data, metadata } = message;
+    
+    // Validate audio data
+    if (!SecurityValidator.validateAudioData(data)) {
+      logger.error('Invalid audio data received', { sessionId, messageId: id });
+      return;
+    }
 
     // Initialize stream if first chunk
     if (metadata.isFirst) {
@@ -179,6 +198,19 @@ class AudioReceiver {
 
     // Process audio chunk
     const audioBuffer = Buffer.from(data.audio, 'base64');
+    
+    // Check memory allocation
+    if (!this.memoryManager.canAllocate(sessionId, audioBuffer.length)) {
+      logger.error('Memory limit exceeded for stream', { sessionId });
+      await this.audioProcessor.finalizeStream(sessionId);
+      this.activeStreams.delete(sessionId);
+      this.memoryManager.deallocate(sessionId);
+      return;
+    }
+    
+    // Update memory tracking
+    this.memoryManager.allocate(sessionId, audioBuffer.length);
+    this.memoryManager.updateActivity(sessionId);
     
     try {
       await this.audioProcessor.processChunk(sessionId, audioBuffer, data.format);
@@ -200,6 +232,7 @@ class AudioReceiver {
         });
         await this.audioProcessor.finalizeStream(sessionId);
         this.activeStreams.delete(sessionId);
+        this.memoryManager.deallocate(sessionId);
       }
     } catch (error) {
       logger.error('Failed to process audio chunk', { error, sessionId, messageId: id });
@@ -226,7 +259,7 @@ class AudioReceiver {
     }
   }
 
-  private handleError(message: ErrorMessage): void {
+  private async handleError(message: ErrorMessage): Promise<void> {
     const { id, sessionId, service, timestamp, error } = message;
     
     logger.error('Voice service error', {
@@ -241,7 +274,9 @@ class AudioReceiver {
 
     // Clean up any active streams for this session
     if (this.activeStreams.has(sessionId)) {
+      await this.audioProcessor.finalizeStream(sessionId);
       this.activeStreams.delete(sessionId);
+      this.memoryManager.deallocate(sessionId);
       logger.info('Cleaned up active stream due to error', { sessionId });
     }
   }
@@ -262,12 +297,23 @@ class AudioReceiver {
   private setupExpress(): void {
     this.app.use(express.json());
 
-    // Health check endpoint
-    this.app.get('/health', (_req, res) => {
+    // Health check endpoint with rate limiting
+    this.app.get('/health', (req, res) => {
+      const clientIp = req.ip || 'unknown';
+      if (!this.rateLimiter.isAllowed(`health-${clientIp}`)) {
+        res.status(429).json({ error: 'Too many requests' });
+        return;
+      }
+      const memoryStats = this.memoryManager.getMemoryStats();
       const health = {
         status: this.redisClient?.isOpen ? 'healthy' : 'unhealthy',
         uptime: Date.now() - this.startTime,
         activeStreams: this.activeStreams.size,
+        memory: {
+          used: memoryStats.totalUsed,
+          limit: memoryStats.totalLimit,
+          percentage: (memoryStats.totalUsed / memoryStats.totalLimit) * 100
+        },
         timestamp: new Date().toISOString()
       };
 
@@ -275,8 +321,13 @@ class AudioReceiver {
       res.status(statusCode).json(health);
     });
 
-    // Metrics endpoint
-    this.app.get('/metrics', async (_req, res) => {
+    // Metrics endpoint with rate limiting
+    this.app.get('/metrics', async (req, res) => {
+      const clientIp = req.ip || 'unknown';
+      if (!this.rateLimiter.isAllowed(`metrics-${clientIp}`)) {
+        res.status(429).json({ error: 'Too many requests' });
+        return;
+      }
       try {
         const metrics = await prometheusRegister.metrics();
         res.set('Content-Type', prometheusRegister.contentType);
@@ -299,9 +350,15 @@ class AudioReceiver {
       logInfo('[SIGNAL]', `Received ${signal}, shutting down gracefully...`);
       this.isShuttingDown = true;
 
+      // Clear cleanup interval
+      if (this.cleanupInterval) {
+        clearInterval(this.cleanupInterval);
+      }
+      
       // Close active streams
       for (const [sessionId] of this.activeStreams) {
         await this.audioProcessor.finalizeStream(sessionId);
+        this.memoryManager.deallocate(sessionId);
       }
 
       // Disconnect from Redis
@@ -318,6 +375,39 @@ class AudioReceiver {
 
     process.on('SIGINT', () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));
+  }
+
+  private startCleanupProcess(): void {
+    // Run cleanup every 30 seconds
+    this.cleanupInterval = setInterval(() => {
+      this.performCleanup();
+    }, 30000);
+  }
+
+  private async performCleanup(): Promise<void> {
+    try {
+      // Clean up abandoned streams
+      const abandonedStreams = this.memoryManager.getAbandonedStreams();
+      for (const sessionId of abandonedStreams) {
+        if (this.activeStreams.has(sessionId)) {
+          logger.warn('Cleaning up abandoned stream', { sessionId });
+          await this.audioProcessor.finalizeStream(sessionId);
+          this.activeStreams.delete(sessionId);
+          this.memoryManager.deallocate(sessionId);
+        }
+      }
+
+      // Clean up rate limiter
+      this.rateLimiter.cleanup();
+
+      logger.debug('Cleanup process completed', {
+        abandonedStreams: abandonedStreams.length,
+        activeStreams: this.activeStreams.size,
+        memoryStats: this.memoryManager.getMemoryStats()
+      });
+    } catch (error) {
+      logger.error('Error during cleanup process', { error });
+    }
   }
 }
 

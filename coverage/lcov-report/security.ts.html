@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for audio-processor.ts</title>
+    <title>Code coverage report for security.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="prettify.css" />
     <link rel="stylesheet" href="base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> audio-processor.ts</h1>
+        <h1><a href="index.html">All files</a> security.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.81% </span>
+                <span class="strong">96.15% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>64/107</span>
+                <span class='fraction'>100/104</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.28% </span>
+                <span class="strong">89.18% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>19/35</span>
+                <span class='fraction'>33/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.75% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/16</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.04% </span>
+                <span class="strong">96.07% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>62/105</span>
+                <span class='fraction'>98/102</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -301,589 +301,481 @@
 <a name='L236'></a><a href='#L236'>236</a>
 <a name='L237'></a><a href='#L237'>237</a>
 <a name='L238'></a><a href='#L238'>238</a>
-<a name='L239'></a><a href='#L239'>239</a>
-<a name='L240'></a><a href='#L240'>240</a>
-<a name='L241'></a><a href='#L241'>241</a>
-<a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a>
-<a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a>
-<a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a>
-<a name='L252'></a><a href='#L252'>252</a>
-<a name='L253'></a><a href='#L253'>253</a>
-<a name='L254'></a><a href='#L254'>254</a>
-<a name='L255'></a><a href='#L255'>255</a>
-<a name='L256'></a><a href='#L256'>256</a>
-<a name='L257'></a><a href='#L257'>257</a>
-<a name='L258'></a><a href='#L258'>258</a>
-<a name='L259'></a><a href='#L259'>259</a>
-<a name='L260'></a><a href='#L260'>260</a>
-<a name='L261'></a><a href='#L261'>261</a>
-<a name='L262'></a><a href='#L262'>262</a>
-<a name='L263'></a><a href='#L263'>263</a>
-<a name='L264'></a><a href='#L264'>264</a>
-<a name='L265'></a><a href='#L265'>265</a>
-<a name='L266'></a><a href='#L266'>266</a>
-<a name='L267'></a><a href='#L267'>267</a>
-<a name='L268'></a><a href='#L268'>268</a>
-<a name='L269'></a><a href='#L269'>269</a>
-<a name='L270'></a><a href='#L270'>270</a>
-<a name='L271'></a><a href='#L271'>271</a>
-<a name='L272'></a><a href='#L272'>272</a>
-<a name='L273'></a><a href='#L273'>273</a>
-<a name='L274'></a><a href='#L274'>274</a>
-<a name='L275'></a><a href='#L275'>275</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L239'></a><a href='#L239'>239</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Writable } from 'stream';
-import { spawn, ChildProcess } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import Speaker from 'speaker';
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as path from 'path';
+import { AudioData, AudioFormat } from './types';
 import { logger } from './logger';
-import { AudioDeviceManager } from './audio-devices';
-import { AudioStream, SpeakerConfig, Config } from './types';
-import { SecurityValidator, MemoryManager } from './security';
 &nbsp;
-export class AudioProcessor {
-  private streams = new Map&lt;string, AudioStream&gt;();
-  private config: Config['audio'];
+export class SecurityValidator {
+  private static readonly MAX_AUDIO_CHUNK_SIZE = 10 * 1024 * 1024; // 10MB per chunk
+  private static readonly MAX_SESSION_ID_LENGTH = 128;
+  private static readonly VALID_AUDIO_FORMATS = Object.values(AudioFormat);
 &nbsp;
-  constructor(config: Config['audio'], _memoryManager: MemoryManager) {
-    this.config = config;
-    // Memory manager is used by the parent AudioReceiver
-  }
-&nbsp;
-  async createStream(sessionId: string, format: string, sampleRate: number): Promise&lt;AudioStream&gt; {
-    // Close existing stream if any
-    if (this.streams.has(sessionId)) {
-      await this.finalizeStream(sessionId);
-    }
-&nbsp;
-    const stream: AudioStream = {
-      sessionId,
-      format,
-      sampleRate,
-      output: null,
-      buffer: [],
-      startTime: Date.now()
-    };
-&nbsp;
-    // Create appropriate output based on format and config
-    stream.output = await this.createOutput(format, sampleRate);
-    
-    this.streams.set(sessionId, stream);
-    return stream;
-  }
-&nbsp;
-  private async createOutput(format: string, sampleRate: number): Promise&lt;Writable | ChildProcess | null&gt; {
-    const outputType = this.config.output.type;
-&nbsp;
-    switch (outputType) {
-      case 'speaker':
-        return await this.createSpeakerOutput(format, sampleRate);
-      
-<span class="branch-1 cbranch-no" title="branch not covered" >      case 'ffplay':</span>
-<span class="cstat-no" title="statement not covered" >        return this.createFFplayOutput(format, sampleRate);</span>
-      
-<span class="branch-2 cbranch-no" title="branch not covered" >      case 'vlc':</span>
-<span class="cstat-no" title="statement not covered" >        return this.createVLCOutput(format);</span>
-      
-      case 'file':
-        return null; // File output handled separately
-      
-<span class="branch-4 cbranch-no" title="branch not covered" >      default:</span>
-<span class="cstat-no" title="statement not covered" >        throw new Error(`Unsupported output type: ${outputType}`);</span>
-    }
-  }
-&nbsp;
-  private async createSpeakerOutput(format: string, sampleRate: number): Promise&lt;Speaker&gt; {
-    const speakerConfig: SpeakerConfig = {
-      channels: 1,          // Mono
-      sampleRate: sampleRate,
-      bitDepth: 16          // Default bitDepth
-    };
-&nbsp;
-    if (format === 'pcm') {
-      // PCM configuration for 32-bit float
-      speakerConfig.bitDepth = 32;
-      speakerConfig.float = true;
-      speakerConfig.signed = true;
-    } else {
-      // Default configuration for compressed formats
-      speakerConfig.bitDepth = 16;
-    }
-&nbsp;
-    // Add device configuration if specified
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.config.output.device) {
-      const deviceName = <span class="cstat-no" title="statement not covered" >this.config.output.device;</span>
-<span class="cstat-no" title="statement not covered" >      logger.info('Configuring audio output device', { device: deviceName });</span>
-&nbsp;
-      // On Windows, check if it's a valid device
-<span class="cstat-no" title="statement not covered" >      if (process.platform === 'win32') {</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-          const devices = <span class="cstat-no" title="statement not covered" >await AudioDeviceManager.listDevices();</span>
-          const targetDevice = <span class="cstat-no" title="statement not covered" >AudioDeviceManager.findDeviceByName(devices, deviceName);</span>
-          
-<span class="cstat-no" title="statement not covered" >          if (targetDevice) {</span>
-<span class="cstat-no" title="statement not covered" >            speakerConfig.device = targetDevice.name;</span>
-<span class="cstat-no" title="statement not covered" >            logger.info('Found matching audio device', { </span>
-              requestedDevice: deviceName,
-              foundDevice: targetDevice.name,
-              deviceId: targetDevice.id 
-            });
-          } else {
-            // Try using the device name as-is
-<span class="cstat-no" title="statement not covered" >            speakerConfig.device = deviceName;</span>
-<span class="cstat-no" title="statement not covered" >            logger.warn('Audio device not found in enumeration, using as-is', { </span>
-              device: deviceName,
-              availableDevices: devices.map(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.name)</span>
-            });
-          }
-        } catch (error) {
-<span class="cstat-no" title="statement not covered" >          logger.error('Failed to enumerate audio devices', { error });</span>
-<span class="cstat-no" title="statement not covered" >          speakerConfig.device = deviceName;</span>
-        }
-      } else {
-        // For non-Windows platforms, use the device name directly
-<span class="cstat-no" title="statement not covered" >        speakerConfig.device = deviceName;</span>
-      }
-    }
-&nbsp;
-    return new Speaker(speakerConfig);
-  }
-&nbsp;
-  private <span class="fstat-no" title="function not covered" >createFFplayOutput(</span>format: string, sampleRate: number): ChildProcess {
-    const args = <span class="cstat-no" title="statement not covered" >['-nodisp', '-autoexit'];</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (format === 'pcm') {</span>
-      // Raw PCM input configuration
-<span class="cstat-no" title="statement not covered" >      args.push(</span>
-        '-f', 'f32le',           // 32-bit float little-endian
-        '-ar', String(sampleRate),
-        '-ac', '1',              // Mono
-        '-i', 'pipe:0'
-      );
-    } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (format === 'mp3') {</span>
-<span class="cstat-no" title="statement not covered" >      args.push('-f', 'mp3', '-i', 'pipe:0');</span>
-    }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    args.push('-volume', '100');</span>
-&nbsp;
-    const ffplay = <span class="cstat-no" title="statement not covered" >spawn('ffplay', args, {</span>
-      stdio: ['pipe', 'ignore', 'ignore']
-    });
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    ffplay.on('error', <span class="fstat-no" title="function not covered" >(e</span>rr) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      logger.error('FFplay error', { error: err });</span>
-    });
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    return ffplay;</span>
-  }
-&nbsp;
-  private <span class="fstat-no" title="function not covered" >createVLCOutput(</span>format: string): ChildProcess {
-    const args = <span class="cstat-no" title="statement not covered" >[</span>
-      '-I', 'dummy',
-      '--play-and-exit',
-      '--intf', 'dummy'
-    ];
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (format === 'pcm') {</span>
-<span class="cstat-no" title="statement not covered" >      args.push('--demux', 'rawaud');</span>
-<span class="cstat-no" title="statement not covered" >      args.push('--rawaud-channels', '1');</span>
-<span class="cstat-no" title="statement not covered" >      args.push('--rawaud-samplerate', '44100');</span>
-<span class="cstat-no" title="statement not covered" >      args.push('--rawaud-fourcc', 'f32l');</span>
-    }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    args.push('fd://0');</span>
-&nbsp;
-    const vlc = <span class="cstat-no" title="statement not covered" >spawn('vlc', args, {</span>
-      stdio: ['pipe', 'ignore', 'ignore']
-    });
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    vlc.on('error', <span class="fstat-no" title="function not covered" >(e</span>rr) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      logger.error('VLC error', { error: err });</span>
-    });
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    return vlc;</span>
-  }
-&nbsp;
-  async processChunk(sessionId: string, chunk: Buffer, _format: string): Promise&lt;void&gt; {
-    const stream = this.streams.get(sessionId);
-    if (!stream) {
-      throw new Error(`No stream found for session ${sessionId}`);
-    }
-&nbsp;
-    // Buffer the chunk
-    stream.buffer.push(chunk);
-&nbsp;
-    // Write to output if available
-    if (stream.output) {
-      if ('write' in stream.output) {
-        // Writable stream (Speaker)
-        const written = stream.output.write(chunk);
-        if (!written) {
-          // Handle backpressure
-          await new Promise(resolve =&gt; stream.output!.once('drain', resolve));
-        }
-      } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span><span class="missing-if-branch" title="else path not taken" >E</span>if ('stdin' in stream.output &amp;&amp; stream.output.stdin) {</span>
-        // Child process (ffplay/vlc)
-<span class="cstat-no" title="statement not covered" >        stream.output.stdin.write(chunk);</span>
-      }
-    }
-&nbsp;
-    // Update metrics
-    this.updateMetrics(sessionId, chunk.length);
-  }
-&nbsp;
-  async finalizeStream(sessionId: string): Promise&lt;void&gt; {
-    const stream = this.streams.get(sessionId);
-    if (!stream) return;
-&nbsp;
-    // Save to file if configured
-    if (this.config.saveToFile &amp;&amp; stream.buffer.length &gt; 0) {
-      await this.saveToFile(stream);
-    }
-&nbsp;
-    // Close output
-    if (stream.output) {
-      if ('end' in stream.output) {
-        stream.output.end();
-      } else if ('kill' in stream.output) {
-        stream.output.kill();
-      }
-    }
-&nbsp;
-    // Clean up
-    this.streams.delete(sessionId);
-&nbsp;
-    const duration = Date.now() - stream.startTime;
-    logger.info('Stream finalized', {
-      sessionId,
-      duration,
-      chunks: stream.buffer.length,
-      totalBytes: stream.buffer.reduce((sum, buf) =&gt; sum + buf.length, 0)
-    });
-  }
-&nbsp;
-  private async saveToFile(stream: AudioStream): Promise&lt;void&gt; {
-    const timestamp = new Date().toISOString();
-    const filename = SecurityValidator.generateSafeFilename(
-      stream.sessionId,
-      timestamp,
-      stream.format
-    );
-    
-    const fullAudio = Buffer.concat(stream.buffer);
-    
-    // Ensure we save to a specific directory
-    const outputDir = process.env.AUDIO_OUTPUT_DIR || './audio-output';
-    
-    // Create directory if it doesn't exist
+  static validateAudioData(data: AudioData): boolean {
     try {
-      await fs.promises.mkdir(outputDir, { recursive: true });
+      if (!data || typeof data !== 'object') {
+        logger.warn('Invalid audio data: not an object');
+        return false;
+      }
+&nbsp;
+      if (!data.audio || typeof data.audio !== 'string') {
+        logger.warn('Invalid audio data: missing or invalid audio field');
+        return false;
+      }
+&nbsp;
+      if (!this.isValidBase64(data.audio)) {
+        logger.warn('Invalid audio data: not valid base64');
+        return false;
+      }
+&nbsp;
+      const decodedSize = this.getBase64DecodedSize(data.audio);
+      if (decodedSize &gt; this.MAX_AUDIO_CHUNK_SIZE) {
+        logger.warn('Audio chunk exceeds maximum size', { 
+          size: decodedSize, 
+          maxSize: this.MAX_AUDIO_CHUNK_SIZE 
+        });
+        return false;
+      }
+&nbsp;
+      if (!data.format || !this.VALID_AUDIO_FORMATS.includes(data.format as AudioFormat)) {
+        logger.warn('Invalid audio format', { format: data.format });
+        return false;
+      }
+&nbsp;
+      return true;
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      logger.error('Failed to create output directory', { error, outputDir });</span>
-<span class="cstat-no" title="statement not covered" >      return;</span>
+<span class="cstat-no" title="statement not covered" >      logger.error('Error validating audio data', { error });</span>
+<span class="cstat-no" title="statement not covered" >      return false;</span>
     }
-    
-    // Use sanitized path
-    const safePath = path.join(outputDir, filename);
-    
-    await fs.promises.writeFile(safePath, fullAudio);
-    
-    logger.info('Audio saved to file', {
-      filename: safePath,
-      size: fullAudio.length,
-      format: stream.format
-    });
   }
 &nbsp;
-  private updateMetrics(_sessionId: string, _bytesProcessed: number): void {
-    // Update Prometheus metrics here
+  static validateSessionId(sessionId: string): boolean {
+    if (!sessionId || typeof sessionId !== 'string') {
+      return false;
+    }
+&nbsp;
+    if (sessionId.length &gt; this.MAX_SESSION_ID_LENGTH) {
+      return false;
+    }
+&nbsp;
+    // Allow alphanumeric, hyphens, and underscores
+    return /^[a-zA-Z0-9-_]+$/.test(sessionId);
   }
 &nbsp;
-  async cleanup(): Promise&lt;void&gt; {
-    // Finalize all active streams
-    for (const sessionId of this.streams.keys()) {
-      await this.finalizeStream(sessionId);
+  static sanitizeFilePath(filename: string): string {
+    // Extract just the filename without any path components
+    const basename = path.basename(filename);
+    
+    // Remove any potentially dangerous characters
+    const sanitized = basename.replace(/[^a-zA-Z0-9.-]/g, '-');
+    
+    // Ensure it doesn't start with a dot (hidden file)
+    if (sanitized.startsWith('.')) {
+      return 'audio-' + sanitized.substring(1);
     }
+    
+    return sanitized;
+  }
+&nbsp;
+  static generateSafeFilename(sessionId: string, timestamp: string, format: string): string {
+    // Sanitize each component
+    const safeSessionId = sessionId.replace(/[^a-zA-Z0-9-]/g, '');
+    const safeTimestamp = timestamp.replace(/[:.]/g, '-');
+    const safeFormat = format.replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Ensure the extension is valid
+    const extension = safeFormat === 'pcm' ? 'raw' : safeFormat;
+    
+    return `audio-${safeSessionId}-${safeTimestamp}.${extension}`;
+  }
+&nbsp;
+  private static isValidBase64(str: string): boolean {
+    try {
+      // Check if string matches base64 pattern
+      const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+      if (!base64Regex.test(str)) {
+        return false;
+      }
+      
+      // Try to decode to verify it's valid
+      Buffer.from(str, 'base64');
+      return true;
+    } catch {
+<span class="cstat-no" title="statement not covered" >      return false;</span>
+    }
+  }
+&nbsp;
+  private static getBase64DecodedSize(base64: string): number {
+    // Calculate the decoded size without actually decoding
+    const padding = (base64.match(/=/g) || []).length;
+    return Math.floor((base64.length * 3) / 4) - padding;
+  }
+}
+&nbsp;
+export class RateLimiter {
+  private requests: Map&lt;string, number[]&gt; = new Map();
+  private readonly windowMs: number;
+  private readonly maxRequests: number;
+&nbsp;
+  constructor(windowMs: number = <span class="branch-0 cbranch-no" title="branch not covered" >60000,</span> maxRequests: number = <span class="branch-0 cbranch-no" title="branch not covered" >100)</span> {
+    this.windowMs = windowMs;
+    this.maxRequests = maxRequests;
+  }
+&nbsp;
+  isAllowed(identifier: string): boolean {
+    const now = Date.now();
+    const requests = this.requests.get(identifier) || [];
+    
+    // Remove old requests outside the window
+    const validRequests = requests.filter(time =&gt; now - time &lt; this.windowMs);
+    
+    if (validRequests.length &gt;= this.maxRequests) {
+      this.requests.set(identifier, validRequests);
+      return false;
+    }
+    
+    validRequests.push(now);
+    this.requests.set(identifier, validRequests);
+    return true;
+  }
+&nbsp;
+  cleanup(): void {
+    const now = Date.now();
+    for (const [identifier, requests] of this.requests.entries()) {
+      const validRequests = requests.filter(time =&gt; now - time &lt; this.windowMs);
+      if (validRequests.length === 0) {
+        this.requests.delete(identifier);
+      } else <span class="missing-if-branch" title="else path not taken" >E</span>{
+<span class="cstat-no" title="statement not covered" >        this.requests.set(identifier, validRequests);</span>
+      }
+    }
+  }
+}
+&nbsp;
+export class MemoryManager {
+  private static readonly MAX_BUFFER_SIZE = 50 * 1024 * 1024; // 50MB per stream
+  private static readonly MAX_TOTAL_MEMORY = 500 * 1024 * 1024; // 500MB total
+  private static readonly STREAM_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+  
+  private totalMemoryUsed = 0;
+  private streamMemoryUsage = new Map&lt;string, number&gt;();
+  private streamLastActivity = new Map&lt;string, number&gt;();
+&nbsp;
+  canAllocate(sessionId: string, size: number): boolean {
+    const currentStreamUsage = this.streamMemoryUsage.get(sessionId) || 0;
+    
+    // Check if this would exceed per-stream limit
+    if (currentStreamUsage + size &gt; MemoryManager.MAX_BUFFER_SIZE) {
+      logger.warn('Stream buffer size limit exceeded', {
+        sessionId,
+        currentUsage: currentStreamUsage,
+        requestedSize: size,
+        limit: MemoryManager.MAX_BUFFER_SIZE
+      });
+      return false;
+    }
+    
+    // Check if this would exceed total memory limit
+    if (this.totalMemoryUsed + size &gt; MemoryManager.MAX_TOTAL_MEMORY) {
+      logger.warn('Total memory limit exceeded', {
+        totalUsage: this.totalMemoryUsed,
+        requestedSize: size,
+        limit: MemoryManager.MAX_TOTAL_MEMORY
+      });
+      return false;
+    }
+    
+    return true;
+  }
+&nbsp;
+  allocate(sessionId: string, size: number): void {
+    const currentUsage = this.streamMemoryUsage.get(sessionId) || 0;
+    this.streamMemoryUsage.set(sessionId, currentUsage + size);
+    this.totalMemoryUsed += size;
+    this.streamLastActivity.set(sessionId, Date.now());
+  }
+&nbsp;
+  deallocate(sessionId: string): void {
+    const usage = this.streamMemoryUsage.get(sessionId) || <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
+    this.totalMemoryUsed -= usage;
+    this.streamMemoryUsage.delete(sessionId);
+    this.streamLastActivity.delete(sessionId);
+  }
+&nbsp;
+  getAbandonedStreams(): string[] {
+    const now = Date.now();
+    const abandoned: string[] = [];
+    
+    for (const [sessionId, lastActivity] of this.streamLastActivity.entries()) {
+      if (now - lastActivity &gt; MemoryManager.STREAM_TIMEOUT) {
+        abandoned.push(sessionId);
+      }
+    }
+    
+    return abandoned;
+  }
+&nbsp;
+  updateActivity(sessionId: string): void {
+    this.streamLastActivity.set(sessionId, Date.now());
+  }
+&nbsp;
+  getMemoryStats(): {
+    totalUsed: number;
+    totalLimit: number;
+    streamCount: number;
+    streams: Array&lt;{
+      sessionId: string;
+      usage: number;
+      lastActivity: number | undefined;
+    }&gt;;
+  } {
+    return {
+      totalUsed: this.totalMemoryUsed,
+      totalLimit: MemoryManager.MAX_TOTAL_MEMORY,
+      streamCount: this.streamMemoryUsage.size,
+      streams: Array.from(this.streamMemoryUsage.entries()).map(([sessionId, usage]) =&gt; ({
+        sessionId,
+        usage,
+        lastActivity: this.streamLastActivity.get(sessionId)
+      }))
+    };
   }
 }</pre></td></tr></table></pre>
 
