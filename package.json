@@ -1,7 +1,7 @@
 {
-  "name": "audio-receiver",
-  "version": "2.0.0",
-  "description": "Production-ready audio receiver with PCM support and Prometheus metrics",
+  "name": "chip-windows-output-service",
+  "version": "3.0.0",
+  "description": "CHIP Windows Output Service - Audio, Subtitles, and VTube Studio Integration",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -19,13 +19,19 @@
     "pino-pretty": "^10.2.3",
     "prom-client": "^15.1.0",
     "redis": "^4.6.12",
-    "speaker": "^0.5.5"
+    "speaker": "^0.5.5",
+    "ws": "^8.14.2",
+    "electron": "^28.0.0",
+    "robotjs": "^0.6.0",
+    "node-window-manager": "^2.2.4",
+    "systray": "^1.0.5"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.5",
     "@types/express": "^4.17.21",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "eslint": "^8.55.0",
