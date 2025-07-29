@@ -16,8 +16,7 @@
       "Bash(npm test:*)",
       "Bash(rm:*)",
       "Bash(gh pr:*)",
-      "WebFetch(domain:github.com)",
-      "Bash(npm run test:*)"
+      "WebFetch(domain:github.com)"
     ],
     "deny": []
   }

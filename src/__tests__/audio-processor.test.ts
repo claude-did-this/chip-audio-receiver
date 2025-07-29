@@ -3,21 +3,10 @@ import { AudioProcessor } from '../audio-processor';
 import { Writable } from 'stream';
 import { ChildProcess } from 'child_process';
 import Speaker from 'speaker';
-import { MemoryManager } from '../security';
 
 // Mock dependencies
 jest.mock('../logger');
 jest.mock('../audio-devices');
-jest.mock('../security', () => ({
-  SecurityValidator: {
-    generateSafeFilename: jest.fn((sessionId: string, timestamp: string, format: string) => {
-      const safeTimestamp = timestamp.replace(/[:.]/g, '-');
-      const extension = format === 'pcm' ? 'raw' : format;
-      return `audio-${sessionId}-${safeTimestamp}.${extension}`;
-    })
-  },
-  MemoryManager: jest.fn(() => ({}))
-}));
 jest.mock('speaker', () => {
   return jest.fn().mockImplementation(() => ({
     write: jest.fn().mockReturnValue(true),
@@ -30,7 +19,6 @@ jest.mock('child_process');
 jest.mock('fs', () => ({
   promises: {
     writeFile: jest.fn(),
-    mkdir: jest.fn(),
   },
   mkdirSync: jest.fn(),
   existsSync: jest.fn(),
@@ -38,7 +26,6 @@ jest.mock('fs', () => ({
 
 describe('AudioProcessor - Audio Streaming Behavior', () => {
   let audioProcessor: AudioProcessor;
-  let mockMemoryManager: jest.Mocked<MemoryManager>;
   const mockConfig = {
     output: {
       type: 'speaker' as const,
@@ -50,8 +37,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockMemoryManager = new MemoryManager() as jest.Mocked<MemoryManager>;
-    audioProcessor = new AudioProcessor(mockConfig, mockMemoryManager);
+    audioProcessor = new AudioProcessor(mockConfig);
   });
 
   describe('Stream Lifecycle', () => {
@@ -188,7 +174,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
   describe('Output Type Behavior', () => {
     it('should create speaker output for PCM format', async () => {
       const mockSpeaker = jest.mocked(Speaker);
-      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } }, mockMemoryManager);
+      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } });
 
       await audioProcessor.createStream('session-1', 'pcm', 44100);
 
@@ -203,7 +189,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
 
     it('should create speaker output for MP3 format', async () => {
       const mockSpeaker = jest.mocked(Speaker);
-      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } }, mockMemoryManager);
+      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } });
 
       await audioProcessor.createStream('session-1', 'mp3', 24000);
 
@@ -218,7 +204,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       audioProcessor = new AudioProcessor({ 
         ...mockConfig, 
         output: { type: 'file', device: undefined } 
-      }, mockMemoryManager);
+      });
 
       const stream = await audioProcessor.createStream('session-1', 'pcm', 44100);
 
@@ -300,7 +286,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
         throw new Error('Audio device not found');
       });
 
-      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } }, mockMemoryManager);
+      audioProcessor = new AudioProcessor({ ...mockConfig, output: { type: 'speaker', device: undefined } });
 
       await expect(
         audioProcessor.createStream('session-1', 'pcm', 44100)
@@ -350,15 +336,15 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
 
   describe('File Output', () => {
     let mockWriteFile: jest.Mock;
-    let mockMkdir: jest.Mock;
+    let mockMkdirSync: jest.Mock;
 
     beforeEach(() => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const fs = require('fs');
       mockWriteFile = fs.promises.writeFile as jest.Mock;
-      mockMkdir = fs.promises.mkdir as jest.Mock;
+      mockMkdirSync = fs.mkdirSync as jest.Mock;
       mockWriteFile.mockClear();
-      mockMkdir.mockClear();
+      mockMkdirSync.mockClear();
     });
 
     it('should save audio chunks to file when saveToFile is enabled', async () => {
@@ -366,7 +352,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
         ...mockConfig, 
         saveToFile: true,
         output: { type: 'file', device: undefined } 
-      }, mockMemoryManager);
+      });
 
       const sessionId = 'test-session-123';
       const audioData = Buffer.from('test-audio-data');
@@ -383,7 +369,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
         ...mockConfig,
         saveToFile: true,
       };
-      const processor = new AudioProcessor(configWithFile, mockMemoryManager);
+      const processor = new AudioProcessor(configWithFile);
       
       await processor.createStream('session-1', 'pcm', 44100);
       
@@ -396,7 +382,7 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
       await processor.finalizeStream('session-1');
       
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringMatching(/audio-output[\\\/]audio-session-1-.*\.raw/), // pcm files get .raw extension
+        expect.stringMatching(/audio-session-1-.*\.raw/), // pcm files get .raw extension
         Buffer.concat([chunk1, chunk2])
       );
     });
@@ -410,20 +396,18 @@ describe('AudioProcessor - Audio Streaming Behavior', () => {
           path: 'test-output',
         },
       };
-      const processor = new AudioProcessor(configWithPath, mockMemoryManager);
+      const processor = new AudioProcessor(configWithPath);
       
       const stream = await processor.createStream('session-1', 'pcm', 44100);
       stream.buffer.push(Buffer.from('test'));
       
       await processor.finalizeStream('session-1');
       
-      // Should create the output directory
-      expect(mockMkdir).toHaveBeenCalledWith(
-        './audio-output',
-        { recursive: true }
-      );
+      // The current implementation doesn't create output directories
+      // It writes files to the current directory
+      expect(mockMkdirSync).not.toHaveBeenCalled();
       expect(mockWriteFile).toHaveBeenCalledWith(
-        expect.stringMatching(/audio-output[\\\/]audio-session-1-.*\.raw/),
+        expect.stringMatching(/audio-session-1-.*\.raw/),
         expect.any(Buffer)
       );
     });

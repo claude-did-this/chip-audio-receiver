@@ -1,20 +1,17 @@
 import { Writable } from 'stream';
 import { spawn, ChildProcess } from 'child_process';
 import * as fs from 'fs';
-import * as path from 'path';
 import Speaker from 'speaker';
 import { logger } from './logger';
 import { AudioDeviceManager } from './audio-devices';
 import { AudioStream, SpeakerConfig, Config } from './types';
-import { SecurityValidator, MemoryManager } from './security';
 
 export class AudioProcessor {
   private streams = new Map<string, AudioStream>();
   private config: Config['audio'];
 
-  constructor(config: Config['audio'], _memoryManager: MemoryManager) {
+  constructor(config: Config['audio']) {
     this.config = config;
-    // Memory manager is used by the parent AudioReceiver
   }
 
   async createStream(sessionId: string, format: string, sampleRate: number): Promise<AudioStream> {
@@ -230,33 +227,16 @@ export class AudioProcessor {
   }
 
   private async saveToFile(stream: AudioStream): Promise<void> {
-    const timestamp = new Date().toISOString();
-    const filename = SecurityValidator.generateSafeFilename(
-      stream.sessionId,
-      timestamp,
-      stream.format
-    );
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const extension = stream.format === 'pcm' ? 'raw' : stream.format;
+    const filename = `audio-${stream.sessionId}-${timestamp}.${extension}`;
     
     const fullAudio = Buffer.concat(stream.buffer);
     
-    // Ensure we save to a specific directory
-    const outputDir = process.env.AUDIO_OUTPUT_DIR || './audio-output';
-    
-    // Create directory if it doesn't exist
-    try {
-      await fs.promises.mkdir(outputDir, { recursive: true });
-    } catch (error) {
-      logger.error('Failed to create output directory', { error, outputDir });
-      return;
-    }
-    
-    // Use sanitized path
-    const safePath = path.join(outputDir, filename);
-    
-    await fs.promises.writeFile(safePath, fullAudio);
+    await fs.promises.writeFile(filename, fullAudio);
     
     logger.info('Audio saved to file', {
-      filename: safePath,
+      filename,
       size: fullAudio.length,
       format: stream.format
     });
