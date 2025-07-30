@@ -20,7 +20,9 @@
       "Bash(npm run test:*)",
       "Bash(gh run view:*)",
       "Bash(gh run list:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(npm run dev:phase2:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": []
   }

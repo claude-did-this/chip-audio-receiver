@@ -34,6 +34,26 @@ export const config: Config = {
   logging: {
     level: process.env.LOG_LEVEL || 'info',
     format: (process.env.LOG_FORMAT as 'json' | 'simple') || 'json'
+  },
+  // Phase 2 - UDP Audio Streaming
+  udp: {
+    port: parseInt(process.env.UDP_AUDIO_PORT || '8001', 10),
+    enabled: process.env.UDP_AUDIO_ENABLED !== 'false'
+  },
+  jitterBuffer: {
+    targetBufferMs: parseInt(process.env.JITTER_BUFFER_TARGET_MS || '100', 10),
+    minBufferMs: parseInt(process.env.JITTER_BUFFER_MIN_MS || '50', 10),
+    maxBufferMs: parseInt(process.env.JITTER_BUFFER_MAX_MS || '300', 10),
+    adaptiveMode: process.env.JITTER_BUFFER_ADAPTIVE !== 'false'
+  },
+  // Phase 2 - Subtitle Support
+  subtitles: {
+    enabled: process.env.SUBTITLES_ENABLED === 'true',
+    method: (process.env.SUBTITLES_METHOD as 'obs-websocket' | 'overlay' | 'toast') || 'obs-websocket',
+    displayDuration: parseInt(process.env.SUBTITLES_DISPLAY_DURATION || '5000', 10),
+    obsWebSocketHost: process.env.OBS_WEBSOCKET_HOST,
+    obsWebSocketPort: parseInt(process.env.OBS_WEBSOCKET_PORT || '4455', 10),
+    obsWebSocketPassword: process.env.OBS_WEBSOCKET_PASSWORD
   }
 };
 

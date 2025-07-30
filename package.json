@@ -6,7 +6,12 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev:phase1": "ts-node src/phase1-demo.ts",
+    "dev:phase1:watch": "ts-node-dev --respawn --transpile-only src/phase1-demo.ts",
+    "dev:phase2": "ts-node src/phase2-demo.ts",
+    "dev:phase2:watch": "ts-node-dev --respawn --transpile-only src/phase2-demo.ts",
     "list-devices": "ts-node src/list-devices.ts",
     "lint": "eslint src --ext .ts",
     "test": "jest",
@@ -19,13 +24,15 @@
     "pino-pretty": "^10.2.3",
     "prom-client": "^15.1.0",
     "redis": "^4.6.12",
-    "speaker": "^0.5.5"
+    "speaker": "^0.5.5",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.5",
     "@types/express": "^4.17.21",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "eslint": "^8.55.0",

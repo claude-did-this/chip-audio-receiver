@@ -6,6 +6,7 @@ import { register as prometheusRegister } from 'prom-client';
 
 import { config, validateConfig } from './config';
 import { logger, logBanner, logSection, logSuccess, logError, logInfo } from './logger';
+import { signalHandler } from './signal-handler';
 import { 
   VoiceResponseMessage, 
   MessageType,
@@ -71,6 +72,11 @@ class AudioReceiver {
 
       logInfo('[SYSTEM]', 'Setting up graceful shutdown handlers...');
       this.setupGracefulShutdown();
+      
+      // Use enhanced signal handler
+      signalHandler.onShutdown(async () => {
+        await this.shutdown();
+      });
       
       logSection('Ready');
       logSuccess('Audio Receiver started successfully!');
@@ -344,37 +350,47 @@ class AudioReceiver {
     });
   }
 
+  private async shutdown(): Promise<void> {
+    if (this.isShuttingDown) return;
+    
+    logSection('Shutdown');
+    this.isShuttingDown = true;
+
+    // Clear cleanup interval
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+    
+    // Close active streams
+    for (const [sessionId] of this.activeStreams) {
+      await this.audioProcessor.finalizeStream(sessionId);
+      this.memoryManager.deallocate(sessionId);
+    }
+
+    // Disconnect from Redis
+    if (this.redisClient) {
+      await this.redisClient.disconnect();
+    }
+
+    // Cleanup audio processor
+    await this.audioProcessor.cleanup();
+
+    logSuccess('Shutdown complete');
+  }
+
   private setupGracefulShutdown(): void {
-    const shutdown = async (signal: string): Promise<void> => {
-      logSection('Shutdown');
-      logInfo('[SIGNAL]', `Received ${signal}, shutting down gracefully...`);
-      this.isShuttingDown = true;
-
-      // Clear cleanup interval
-      if (this.cleanupInterval) {
-        clearInterval(this.cleanupInterval);
+    // Legacy handlers for compatibility
+    process.on('SIGINT', () => {
+      if (!signalHandler.isShuttingDownNow()) {
+        signalHandler['handleShutdown']('SIGINT');
       }
-      
-      // Close active streams
-      for (const [sessionId] of this.activeStreams) {
-        await this.audioProcessor.finalizeStream(sessionId);
-        this.memoryManager.deallocate(sessionId);
+    });
+    
+    process.on('SIGTERM', () => {
+      if (!signalHandler.isShuttingDownNow()) {
+        signalHandler['handleShutdown']('SIGTERM');
       }
-
-      // Disconnect from Redis
-      if (this.redisClient) {
-        await this.redisClient.disconnect();
-      }
-
-      // Cleanup audio processor
-      await this.audioProcessor.cleanup();
-
-      logSuccess('Shutdown complete');
-      process.exit(0);
-    };
-
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    });
   }
 
   private startCleanupProcess(): void {
