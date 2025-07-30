@@ -13,6 +13,7 @@ import { UDPAudioServer } from './udp-audio-server';
 import { AudioSyncManager } from './audio-sync-manager';
 import { JitterBuffer } from './jitter-buffer';
 import { AudioPacket, AudioFormat, NetworkConditions, SyncTimestamps } from './types';
+import { signalHandler } from './signal-handler';
 import * as dgram from 'dgram';
 
 // Set environment variables to avoid config issues
@@ -281,17 +282,10 @@ class Phase1Demo {
 if (require.main === module) {
   const demo = new Phase1Demo();
   
-  // Handle graceful shutdown
-  process.on('SIGINT', async () => {
-    console.log('\n🔄 Received SIGINT, shutting down gracefully...');
+  // Register shutdown handler
+  signalHandler.onShutdown(async () => {
+    console.log('🔄 Shutting down Phase 1 demo...');
     await demo.stop();
-    process.exit(0);
-  });
-
-  process.on('SIGTERM', async () => {
-    console.log('\n🔄 Received SIGTERM, shutting down gracefully...');
-    await demo.stop();
-    process.exit(0);
   });
 
   // Start the demo
